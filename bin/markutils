@@ -1,0 +1,76 @@
+#!/bin/sh/
+################################################################################
+# Markutils save and restore the current directorry to perssitent registers
+# that are shared across shells.
+#
+# To install, source this file from your .bashrc or .bash_profile, e.g.
+#   source ~/bin/markutils
+#
+# To use:
+#   The following simple aliases are created by this script:
+#    sR    sets register R to `pwd`
+#    pR    prints the directory in register R
+#    gR    cd's to register R's directory
+#
+# Register names:
+#   Registers 0-3,5-9,A-Z are automatically created, giving you the aliases
+#    s1,g1,p1 ... s9,g9,p9 etc
+#   Register 4 is not created due to conflict with p4(perforce)
+#   Customize the REGISTER_NAMES variable below to get
+#   additional registers. Notice that register names can be multiple characters
+#   long, giving you aliases like:
+#    sTS,gTS,pTS
+#
+# Example:
+#   I work on a project that is simply named, "tool". It has two directories:
+#     ~/Working/tool/src/
+#     ~/Working/tool/include/
+#   
+#   When I began the project I did the following:
+#     trantor@/home/duca/ $  cd ~/Working/tool/src
+#     trantor@/home/duca/Working/tool/src/ $ sTS
+#     Set sTS to /home/duca/Working/tool/src/
+#     trantor@/home/duca/Working/tool/src/ $ cd ../include/
+#     trantor@/home/duca/Working/tool/src/ $ sTI
+#     Set sTI to /home/duca/Working/tool/include/
+#
+#   Now when I work on the code, I can move between these two directories using
+#   these two aliases. This pays off big time when your directories are much
+#   longer and harder to type.
+# 
+################################################################################
+REGISTER_NAMES="0 1 2 3 5 6 7 8 9 A B C CI CL D E F G H I J K L M N O P Q R S SRT T TA TI TS TG T0 T1 T2 T3 U UB US V W X Y Z PC PL J1 J2 J3 J4 J5 JT JTs JTj JS JI JIE JE JH JQ"
+
+################################################################################
+# The values of registers are stored in the following folder
+# In other words, register X's value would be $(MARK_DIR)/mX
+MARK_DIR=~/.markutils
+
+################################################################################
+NUM_MARKS=9
+if ! test -d $MARK_DIR; then
+	mkdir $MARK_DIR
+fi
+
+for i in $REGISTER_NAMES; do
+	markfile=$MARK_DIR"/m"$i
+
+	acmd="echo Set g"$i" to \`pwd\`; echo \`pwd\` > $markfile"
+	cmd="alias s"$i"='"$acmd\'
+	eval $cmd
+
+	acmd="cd \`cat $markfile\`"
+	cmd="alias g"$i"='"$acmd"'"
+	eval $cmd
+
+	acmd="echo \`cat $markfile\`"
+	cmd="alias p"$i"='"$acmd"'"
+	eval $cmd
+
+	if ! test -e $markfile; then eval s$i; fi
+done
+unset i
+unset cmd
+unset acmd
+alias resetmarks='rm -rf $MARK_DIR; source ~/bin/markutils'
+alias b='cd $OLDPWD'
