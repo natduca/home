@@ -1,0 +1,194 @@
+; all modes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(compilation-scroll-output 1)
+ '(indent-tabs-mode nil)
+ '(inhibit-startup-screen t))
+(setq-default indent-tabs-mode nil)
+(toggle-show-trailing-whitespace-show-ws)
+(defun all-mode-hook()
+  (setq truncate-lines 1)
+  (setq indent-tabs-mode nil)
+  (local-set-key [(control r) (control v)] 'revert-buffer)
+  (local-set-key [(control r) (control a)] 'mark-whole-buffer)
+  (local-set-key [(control r) j] 'eval-region)
+  (show-ws-highlight-trailing-whitespace)
+  )
+
+(defun save-and-compile()
+ (interactive "")
+ (save-buffer 0)
+ (compile "do_g1_make")
+; (compile "make")
+ )
+
+(defun next-error-and-center()
+  (interactive "")
+  (next-error)
+)
+
+(global-set-key "\C-c\C-v" 'save-and-compile)
+(global-set-key "\C-c\C-f" 'next-error-and-center)
+
+; c/c++
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-c-common-hook ()
+  (all-mode-hook)
+  )
+(add-hook 'c++-mode-common-hook 'my-c-common-hook)
+(add-hook 'c-mode-common-hook 'my-c-common-hook)
+(add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
+
+; changelogs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-change-log-hook()
+  (all-mode-hook)
+  (setq nxml-child-indent 4)
+  )
+(add-hook 'change-log-mode-hook 'my-change-log-hook)
+
+; js2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-js2-mode-hook()
+  (all-mode-hook)
+  (setq js2-mirror-mode nil)
+  (setq js2-escape-quotes nil)
+  (setq js2-bounce-indent-flag nil)
+  (setq js2-basic-offset 2)
+  )
+(add-hook 'js2-mode-hook 'my-js2-mode-hook)
+
+; java
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-java-mode-hook()
+  (all-mode-hook)
+  (setq c-basic-offset 4)
+  )
+(add-hook 'java-mode-hook 'my-java-mode-hook)
+
+
+; python
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-python-mode-hook()
+  (all-mode-hook)
+  (setq python-indent 2)  
+  )
+(add-hook 'python-mode-hook 'my-python-mode-hook)
+
+;(defun shift-left()
+;  (indent-rigidly -1))
+;(global-set-key (read-kbd-macro "C-,") 'shift-left)
+;(global-set-key (read-kbd-macro "C-c f") 'cscope-find-this-symbol)
+
+; Latex
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-latex-common-hook ()
+  (setq tex-dvi-view-command "xdvi")
+  (local-set-key "\C-c\C-v" 'save-and-compile)
+  (local-set-key "\C-c\C-c" 'tex-view)
+  (local-set-key "\C-c\C-m" 'next-error)
+  )
+(add-hook 'latex-mode-hook 'my-latex-common-hook)
+
+
+; Child files
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;(load-file "/home/build/public/eng/elisp/google.el")
+
+
+; Keybindings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key [f4] 'kill-this-buffer)
+(global-set-key [f5] 'goto-line)
+(global-set-key [delete] 'delete-char)
+(global-set-key [kp-delete] 'delete-char)
+(global-set-key [f9] 'shrink-window-horizontally)
+(global-set-key [f10] 'enlarge-window-horizontally)
+(global-set-key [f11] 'enlarge-window)
+(global-set-key [f12] 'shrink-window)
+
+
+(global-set-key (quote [C-tab]) 'other-window)
+(global-set-key [f2] 'other-frame)
+(global-set-key [f3] 'font-lock-fontify-buffer)
+
+(global-set-key "\C-s" 'isearch-forward-regexp)
+(global-unset-key "\C-r")
+
+(global-set-key "\M-i" 'indent-region)
+
+(global-unset-key "\C-r")
+(global-set-key "\C-r\C-e" 'replace-string)
+(global-set-key "\C-r\C-q" 'query-replace)
+(global-set-key "\C-r\C-r" 'replace-regexp)
+
+
+; Look n feel
+(set-default-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
+(set-background-color "black")
+(set-foreground-color "white")
+(set-cursor-color "white")
+(menu-bar-mode 0)
+(tool-bar-mode 0)
+
+(global-font-lock-mode '1) ;syntax highlight
+
+(transient-mark-mode '1) ;mark
+
+(mouse-avoidance-mode 'exile) ;mouse
+
+(global-hl-line-mode 1) ; show current line
+(set-face-background 'hl-line "#0F0F0F")
+
+(global-linum-mode 1) ;line numbers
+(set-face-background 'linum "#0F0F0F")
+
+(setq fringe-style 'minimal) ; shrink the fringe
+(set-fringe-mode 1)
+(set-face-background 'fringe "#0F0F0F")
+
+(setq make-backup-files nil) ;backups
+
+; Things that don't quite work yet
+(defun reload-dot-emacs()
+  (interactive "")
+  (load-file "~/.emacs")
+  )
+(global-set-key [C-F12] 'reload-dot-emacs)
+
+(defun nat-1()
+  (interactive "")
+  (message "evaluating buffer")
+  (eval-buffer)
+  )
+
+(defun nat-2()
+  (interactive "")
+  (message "evaluating [region")
+  (eval-region)
+  )
+
+(global-set-key "\M-l" (lambda ()
+                         (interactive "")
+                         (message "evaluating buffer")
+                         (eval-buffer)))
+(global-set-key "\M-r" (lambda ()
+                         (interactive "")
+                         (message "evaluating region")
+                         (eval-region)))
+
+(global-set-key [f6] (lambda ()
+                       (interactive "")
+                       (message "making frame on 10.98.8.119:0")
+                       (make-frame-on-display "10.98.8.119:0")
+                       ))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
