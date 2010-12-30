@@ -1,0 +1,7 @@
+source ./bin/markutils
+
+alias purge_pyc='find ./ -name \*.pyc | xargs rm'
+alias purge_tmps='find ./ -name \*~ | xargs rm'
+alias purge='purge_pyc; purge_tmps'
+
+export PS1='\[\033]1;\007\033[32m\]\h:\w\[\033[33m\033[0m\] \$ '
