@@ -43,6 +43,32 @@
 (add-hook 'c-mode-common-hook 'my-c-common-hook)
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 
+; html
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my-html-mode-hook ()
+  (local-set-key "\C-c\C-v" 'save-and-compile)
+  )
+(add-hook 'html-mode-hook 'my-html-mode-hook)
+
+; todoo
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my-todoo-mode-hook ()
+  (auto-fill-mode '0)
+  )
+(add-hook 'todoo-mode-hook 'my-todoo-mode-hook)
+
+; css
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my-css-mode-hook ()
+  (local-set-key "\C-c\C-v" 'save-and-compile)
+  (setq 'css-indent-offset 2)
+  )
+(add-hook 'css-mode-hook 'my-css-mode-hook)
+
+
 ; changelogs
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-change-log-hook()
@@ -75,7 +101,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-python-mode-hook()
   (all-mode-hook)
-  (setq python-indent 2)  
+  (setq python-indent 2)
   )
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
@@ -103,7 +129,6 @@
 ; Keybindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key [f4] 'kill-this-buffer)
-(global-set-key [f5] 'goto-line)
 (global-set-key [delete] 'delete-char)
 (global-set-key [kp-delete] 'delete-char)
 (global-set-key [f9] 'shrink-window-horizontally)
@@ -114,7 +139,6 @@
 
 (global-set-key (quote [C-tab]) 'other-window)
 (global-set-key [f2] 'other-frame)
-(global-set-key [f3] 'font-lock-fontify-buffer)
 
 (global-set-key "\C-s" 'isearch-forward-regexp)
 (global-unset-key "\C-r")
@@ -128,10 +152,19 @@
 
 
 ; Look n feel
-(set-default-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
+(set-frame-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
 (set-background-color "black")
 (set-foreground-color "white")
 (set-cursor-color "white")
+
+(setq default-frame-alist
+      (append default-frame-alist
+       '((background-color . "black")
+         (foreground-color . "white")
+         (cursor-color . "white")
+         (font . "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
+         )))
+
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 
@@ -192,3 +225,33 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  )
+
+
+;; Shift the selected region right if distance is postive, left if
+;; negative
+(defun shift-region (distance)
+  (let ((mark (mark)))
+    (save-excursion
+      (indent-rigidly (region-beginning) (region-end) distance)
+      (push-mark mark t t)
+      ;; Tell the command loop not to deactivate the mark
+      ;; for transient mark mode
+      (setq deactivate-mark nil))))
+
+(defun shift-right ()
+  (interactive)
+  (shift-region 1))
+
+(defun shift-left ()
+  (interactive)
+  (shift-region -1))
+
+;; Bind (shift-right) and (shift-left) function to your favorite keys. I use
+;; the following so that Ctrl-Shift-Right Arrow moves selected text one 
+;; column to the right, Ctrl-Shift-Left Arrow moves selected text one
+;; column to the left:
+
+(global-set-key [C-S-right] 'shift-right)
+(global-set-key [M-n] 'next-error)
+(global-set-key [M-p] 'previous-error)
+

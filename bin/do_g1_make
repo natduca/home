@@ -1,0 +1,12 @@
+#!/bin/sh
+if test `pwd` != `cat ~/.markutils/m1`; then
+  if test -e ./Makefile; then
+      make
+      exit
+  fi
+fi
+
+if test ! -e ~/.markutils/g1_make_args; then touch ~/.markutils/g1_make_args; fi
+echo Running make -C `cat ~/.markutils/m1` -j15 `cat ~/.markutils/g1_make_args`
+make -C `cat ~/.markutils/m1` -j15 `cat ~/.markutils/g1_make_args`
+

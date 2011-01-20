@@ -1,0 +1,10 @@
+#!/bin/sh
+if test ! -e ~/.markutils/g1_make_args; then
+	touch ~/.markutils/g1_make_args
+fi
+
+if test $# = 0; then
+	cat ~/.markutils/g1_make_args
+else
+	echo $* > ~/.markutils/g1_make_args
+fi
