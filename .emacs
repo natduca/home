@@ -1,3 +1,6 @@
+(add-to-list 'load-path "~/.emacs.d/site-lisp/")
+;;(setq js2-mode-dev-mode-p 1)
+
 ; all modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
@@ -9,14 +12,16 @@
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t))
 (setq-default indent-tabs-mode nil)
-(toggle-show-trailing-whitespace-show-ws)
+(when (boundp 'toggle-show-trailing-whitespace-show-ws)
+  (toggle-show-trailing-whitespace-show-ws))
 (defun all-mode-hook()
   (setq truncate-lines 1)
   (setq indent-tabs-mode nil)
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
   (local-set-key [(control r) j] 'eval-region)
-  (show-ws-highlight-trailing-whitespace)
+  (when (boundp 'show-ws-highlight-trailing-whitespace)
+    (show-ws-highlight-trailing-whitespace))
   )
 
 (defun save-and-compile()
@@ -87,6 +92,14 @@
   (setq js2-basic-offset 2)
   )
 (add-hook 'js2-mode-hook 'my-js2-mode-hook)
+
+; javascript (non-js2)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-js-mode-hook()
+  (all-mode-hook)
+  (setq js-indent-level 2)
+  )
+(add-hook 'js-mode-hook 'my-js-mode-hook)
 
 ; java
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
