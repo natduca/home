@@ -1,0 +1,1 @@
+git daemon --verbose --export-all --base-path=/ --listen=0.0.0.0 --reuseaddr --enable=receive-pack
