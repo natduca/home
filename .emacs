@@ -8,10 +8,12 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(compilation-skip-threshold 1)
  '(compilation-scroll-output 1)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t))
 (setq-default indent-tabs-mode nil)
+
 (when (boundp 'toggle-show-trailing-whitespace-show-ws)
   (toggle-show-trailing-whitespace-show-ws))
 (defun all-mode-hook()
@@ -43,6 +45,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-c-common-hook ()
   (all-mode-hook)
+  (when (string-match "third_party/WebKit/" (buffer-file-name))
+    (message "Detected a webkit file. Using 4-space indentation.")
+    (setq c-basic-offset 4))
   )
 (add-hook 'c++-mode-common-hook 'my-c-common-hook)
 (add-hook 'c-mode-common-hook 'my-c-common-hook)
@@ -117,11 +122,6 @@
   (setq python-indent 2)
   )
 (add-hook 'python-mode-hook 'my-python-mode-hook)
-
-;(defun shift-left()
-;  (indent-rigidly -1))
-;(global-set-key (read-kbd-macro "C-,") 'shift-left)
-;(global-set-key (read-kbd-macro "C-c f") 'cscope-find-this-symbol)
 
 ; Latex
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
