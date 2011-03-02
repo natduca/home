@@ -1,2 +1,2 @@
 #!/bin/sh
-x11vnc -xkb -display :0
+x11vnc -xkb -usepw -display :0
