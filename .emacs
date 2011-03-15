@@ -1,6 +1,9 @@
-(let ((default-directory "/home/nduca/.emacs.d/site-lisp/"))
-  (normal-top-level-add-to-load-path '("."))
-  (normal-top-level-add-subdirs-to-load-path))
+(when (and
+       (file-exists-p "/home/nduca/.emacs.d/")
+       (file-exists-p "/home/nduca/.emacs.d/site-lisp/"))
+  (let ((default-directory "/home/nduca/.emacs.d/site-lisp/"))
+    (normal-top-level-add-to-load-path '("."))
+    (normal-top-level-add-subdirs-to-load-path)))
 ;;(setq js2-mode-dev-mode-p 1)
 
 ; all modes
@@ -11,7 +14,6 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(compilation-skip-threshold 1)
- '(compilation-scroll-output 1)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t))
 (setq-default indent-tabs-mode nil)
