@@ -1,4 +1,6 @@
-(add-to-list 'load-path "~/.emacs.d/site-lisp/")
+(let ((default-directory "/home/nduca/.emacs.d/site-lisp/"))
+  (normal-top-level-add-to-load-path '("."))
+  (normal-top-level-add-subdirs-to-load-path))
 ;;(setq js2-mode-dev-mode-p 1)
 
 ; all modes
@@ -8,11 +10,13 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(compilation-skip-threshold 1)
  '(compilation-scroll-output 1)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t))
 (setq-default indent-tabs-mode nil)
-(when (boundp 'toggle-show-trailing-whitespace-show-ws)
+
+(when (fboundp 'toggle-show-trailing-whitespace-show-ws)
   (toggle-show-trailing-whitespace-show-ws))
 (defun all-mode-hook()
   (setq truncate-lines 1)
@@ -20,7 +24,7 @@
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
   (local-set-key [(control r) j] 'eval-region)
-  (when (boundp 'show-ws-highlight-trailing-whitespace)
+  (when (fboundp 'show-ws-highlight-trailing-whitespace)
     (show-ws-highlight-trailing-whitespace))
   )
 
@@ -42,6 +46,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-c-common-hook ()
   (all-mode-hook)
+  (when (string-match "third_party/WebKit/" (buffer-file-name))
+    (message "Detected a webkit file. Using 4-space indentation.")
+    (setq c-basic-offset 4))
   )
 (add-hook 'c++-mode-common-hook 'my-c-common-hook)
 (add-hook 'c-mode-common-hook 'my-c-common-hook)
@@ -116,11 +123,6 @@
   (setq python-indent 2)
   )
 (add-hook 'python-mode-hook 'my-python-mode-hook)
-
-;(defun shift-left()
-;  (indent-rigidly -1))
-;(global-set-key (read-kbd-macro "C-,") 'shift-left)
-;(global-set-key (read-kbd-macro "C-c f") 'cscope-find-this-symbol)
 
 ; Latex
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -199,33 +201,6 @@
 (setq make-backup-files nil) ;backups
 
 ; Things that don't quite work yet
-(defun reload-dot-emacs()
-  (interactive "")
-  (load-file "~/.emacs")
-  )
-(global-set-key [C-F12] 'reload-dot-emacs)
-
-(defun nat-1()
-  (interactive "")
-  (message "evaluating buffer")
-  (eval-buffer)
-  )
-
-(defun nat-2()
-  (interactive "")
-  (message "evaluating [region")
-  (eval-region)
-  )
-
-(global-set-key "\M-l" (lambda ()
-                         (interactive "")
-                         (message "evaluating buffer")
-                         (eval-buffer)))
-(global-set-key "\M-r" (lambda ()
-                         (interactive "")
-                         (message "evaluating region")
-                         (eval-region)))
-
 (global-set-key [f6] (lambda ()
                        (interactive "")
                        (message "making frame on 10.98.8.119:0")
@@ -258,12 +233,13 @@
   (interactive)
   (shift-region -1))
 
-;; Bind (shift-right) and (shift-left) function to your favorite keys. I use
-;; the following so that Ctrl-Shift-Right Arrow moves selected text one 
-;; column to the right, Ctrl-Shift-Left Arrow moves selected text one
-;; column to the left:
-
+(global-set-key [C-S-left] 'shift-left)
 (global-set-key [C-S-right] 'shift-right)
+
 (global-set-key [M-n] 'next-error)
 (global-set-key [M-p] 'previous-error)
 
+;;  if possible...
+(catch
+  (load-library "goog")
+  )
