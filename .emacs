@@ -27,8 +27,7 @@
 (defun save-and-compile()
  (interactive "")
  (save-buffer 0)
- (compile "do_g1_make")
-; (compile "make")
+ (compile "/bin/bash -l -c \"do_g1_make\"")
  )
 
 (defun next-error-and-center()
