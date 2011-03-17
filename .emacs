@@ -10,6 +10,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(fill-column 80)
  '(compilation-skip-threshold 1)
  '(compilation-scroll-output 1)
  '(indent-tabs-mode nil)
@@ -24,6 +25,10 @@
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
   (local-set-key [(control r) j] 'eval-region)
+  (when (and
+         (fboundp 'column-marker-1)
+         (not (is-webkit)))
+    (column-marker-1 80))
   (when (fboundp 'show-ws-highlight-trailing-whitespace)
     (show-ws-highlight-trailing-whitespace))
   )
@@ -43,11 +48,14 @@
 (global-set-key "\C-c\C-v" 'save-and-compile)
 (global-set-key "\C-c\C-f" 'next-error-and-center)
 
+(defun is-webkit ()
+  (string-match "third_party/WebKit/" (buffer-file-name)))
+
 ; c/c++
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-c-common-hook ()
   (all-mode-hook)
-  (when (string-match "third_party/WebKit/" (buffer-file-name))
+  (when (is-webkit)
     (message "Detected a webkit file. Using 4-space indentation.")
     (setq c-basic-offset 4))
   )
@@ -243,4 +251,8 @@
 ;;  if possible...
 (catch
   (load-library "goog")
+  )
+
+(catch
+  (load-library "column-marker")
   )
