@@ -1,6 +1,9 @@
-(let ((default-directory "/home/nduca/.emacs.d/site-lisp/"))
-  (normal-top-level-add-to-load-path '("."))
-  (normal-top-level-add-subdirs-to-load-path))
+(when (and
+       (file-exists-p "/home/nduca/.emacs.d/")
+       (file-exists-p "/home/nduca/.emacs.d/site-lisp/"))
+  (let ((default-directory "/home/nduca/.emacs.d/site-lisp/"))
+    (normal-top-level-add-to-load-path '("."))
+    (normal-top-level-add-subdirs-to-load-path)))
 ;;(setq js2-mode-dev-mode-p 1)
 
 ; all modes
@@ -12,7 +15,6 @@
   ;; If there is more than one, they won't work right.
  '(fill-column 80)
  '(compilation-skip-threshold 1)
- '(compilation-scroll-output 1)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t))
 (setq-default indent-tabs-mode nil)
@@ -36,8 +38,7 @@
 (defun save-and-compile()
  (interactive "")
  (save-buffer 0)
- (compile "do_g1_make")
-; (compile "make")
+ (compile "/bin/bash -l -c \"do_g1_make\"")
  )
 
 (defun next-error-and-center()

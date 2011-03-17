@@ -1,8 +1,17 @@
 #!/bin/sh
+
 if test `pwd` != `cat ~/.markutils/m1`; then
   if test -e ./Makefile; then
-      make
-      exit
+      if test -n `which is_subdir`; then
+        tmp=`cat ~/.markutils/m1`
+        if ! `is_subdir . $tmp`; then
+          make
+          exit
+	fi
+      else
+        make
+        exit
+      fi
   fi
 fi
 
