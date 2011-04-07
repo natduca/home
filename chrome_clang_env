@@ -3,3 +3,5 @@ export CC=clang
 export CXX=clang++
 export builddir_name=out/llvm
 export GYP_DEFINES='clang=1'
+
+export PS1="(clang) $PS1"
