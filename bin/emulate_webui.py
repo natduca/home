@@ -20,29 +20,35 @@ import grit.format.html_inline as grit_inline
 
 PORT = 8080
 
-jstfile = os.path.abspath("../../third_party/jstemplate/jstemplate.js")
-if not os.path.exists(jstfile):
+jstfile1 = os.path.abspath("../../third_party/jstemplate/jstemplate.js")
+jstfile2 = os.path.abspath("../../third_party/jstemplate/jsevalcontext.js")
+jstfile3 = os.path.abspath("../../third_party/jstemplate/util.js")
+if not os.path.exists(jstfile1) or not os.path.exists(jstfile2) or not os.path.exists(jstfile3):
   raise Exception("Could not find jstemplate!")
 jsttext = """<script>
 %s
+%s
+%s
 </script>
-""" % open(jstfile, 'r').read()
+""" % (open(jstfile1, 'r').read(),
+       open(jstfile2, 'r').read(),
+       open(jstfile3, 'r').read())
 
 def sendContent(ext,req,msg):
   req.send_response(200)
   req.send_header('Last-Modified', req.date_time_string(time.time()))
   req.send_header('Content-Length', len(msg))
   if ext == ".js":
-    resp.send_header('Content-Type', 'application/javascript')
+    req.send_header('Content-Type', 'application/javascript')
   elif ext == ".css":
-    resp.send_header('Content-Type', 'text/css')
+    req.send_header('Content-Type', 'text/css')
   elif ext == ".html":
-    resp.send_header('Content-Type', 'text/html')
+    req.send_header('Content-Type', 'text/html')
   elif ext == ".wav":
-    resp.send_header('Content-Type', 'audio/x-wav')
+    req.send_header('Content-Type', 'audio/x-wav')
   else:
     print "could not geuss mimetype for: %s" % ext
-    resp.send_header('Content-Type', 'text/plain')
+    req.send_header('Content-Type', 'text/plain')
   req.end_headers()
   req.wfile.write(msg)
 
