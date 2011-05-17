@@ -16,6 +16,8 @@ if test `pwd` != `cat ~/.markutils/m1`; then
 fi
 
 if test ! -e ~/.markutils/g1_make_args; then touch ~/.markutils/g1_make_args; fi
-echo Running make -C `cat ~/.markutils/m1` -j15 `cat ~/.markutils/g1_make_args`
+if test ! -e ~/.markutils/g1_make_cpucount; then echo 1 > ~/.markutils/g1_make_cpucount; fi
+cpuc=`cat ~/.markutils/g1_make_cpucount`
+echo Running make -C `cat ~/.markutils/m1` -j$cpuc `cat ~/.markutils/g1_make_args`
 make -C `cat ~/.markutils/m1` -j15 `cat ~/.markutils/g1_make_args`
 
