@@ -18,3 +18,7 @@ alias ga='git add .'
 alias gc='git commit -m .'
 alias gca='git commit --amend'
 alias gs='git status'
+
+alias chrome_clang_env='source ~/home/chrome_clang_env'
+
+

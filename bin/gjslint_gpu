@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+gjslint --strict `ls *.js | grep -v _tests`

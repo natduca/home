@@ -1,0 +1,2 @@
+#!/bin/bash
+xvnc4viewer SendPrimary=0 SendClipboard=0 AcceptClipboard=0 PreferredEncoding=hextile -FullColor $1 $2 $3 $4

@@ -14,10 +14,27 @@ if test `pwd` != `cat ~/.markutils/m1`; then
       fi
   fi
 fi
+if test ! -e ~/.markutils/g1_make_cpucount; then echo 1 > ~/.markutils/g1_make_cpucount; fi
+CPUC=`cat ~/.markutils/g1_make_cpucount`
 
 if test ! -e ~/.markutils/g1_make_args; then touch ~/.markutils/g1_make_args; fi
-if test ! -e ~/.markutils/g1_make_cpucount; then echo 1 > ~/.markutils/g1_make_cpucount; fi
-cpuc=`cat ~/.markutils/g1_make_cpucount`
-echo Running make -C `cat ~/.markutils/m1` -j$cpuc `cat ~/.markutils/g1_make_args`
-make -C `cat ~/.markutils/m1` -j15 `cat ~/.markutils/g1_make_args`
+MA=`cat ~/.markutils/g1_make_args`
 
+echo pushd `cat ~/.markutils/m1`
+pushd `cat ~/.markutils/m1`
+
+if test `uname` = Darwin; then
+
+if test -e Makefile; then
+echo Running make -j$CPUC $MA
+make -j15 $MA
+else
+echo Running xcodebuild $MA
+xcodebuild $MA
+fi
+
+else
+echo Running make -j15 $MA
+make -j15 $MA
+fi
+popd
