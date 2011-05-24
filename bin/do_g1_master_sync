@@ -1,0 +1,38 @@
+#!/bin/sh
+pushd `cat ~/.markutils/m1`
+CUR_BRANCH=`git branch | grep ^\* | cut -c 3-`
+echo CUR_BRANCH=$CUR_BRANCH
+
+echo fetch
+git fetch
+
+echo co trunk
+git checkout trunk
+
+echo rebase origin/trunk
+git rebase origin/trunk
+
+# WebKit
+pushd third_party/WebKit
+echo fetch webkit
+git fetch origin
+
+echo co master
+git checkout master
+
+echo rebase origin/master
+git rebase origin/master
+popd
+
+echo sync webkit git
+./tools/sync-webkit-git.py
+
+#gclient
+echo gclient sync
+gclient sync -j16
+
+# all done :)
+echo co $CUR_BRANCH
+git checkout $CUR_BRANCH
+echo You still need to rebase your active branch
+popd
