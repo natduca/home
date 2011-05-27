@@ -26,21 +26,29 @@ git checkout master
 echo rebase origin/master
 git rebase origin/master
 
-echo co $CUR_WKBRANCH
-git checkout $CUR_WKBRANCH
-
 popd
 
 echo sync webkit git
 ./tools/sync-webkit-git.py
 
 #gclient
+pushd third_party/WebKit
+echo co gclient
+git checkout gclient
+
+popd
+
 echo gclient sync
 if test "x$OSTYPE" != "xcygwin"; then
 gclient sync -j16
 else
 gclient sync
 fi
+
+echo co $CUR_WKBRANCH
+pushd third_party/WebKit
+git checkout $CUR_WKBRANCH
+popd
 
 # all done :)
 echo co $CUR_BRANCH

@@ -44,6 +44,8 @@ def sendContent(ext,req,msg):
     req.send_header('Content-Type', 'text/css')
   elif ext == ".html":
     req.send_header('Content-Type', 'text/html')
+  elif ext == ".json":
+    req.send_header('Content-Type', 'text/x-json')
   elif ext == ".wav":
     req.send_header('Content-Type', 'audio/x-wav')
   else:
@@ -62,12 +64,6 @@ def send404(req):
   req.wfile.write(msg)
 
 class MyHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
-  extensions_map = {
-      ".css": "text/css",
-      ".js": "application/javascript",
-      ".html" : "text/html"
-     }
-
   def __init__(self,*args):
     SimpleHTTPServer.SimpleHTTPRequestHandler.__init__(self,*args)
 
