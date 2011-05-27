@@ -17,11 +17,18 @@ pushd third_party/WebKit
 echo fetch webkit
 git fetch origin
 
+CUR_WKBRANCH=`git branch | grep ^\* | cut -c 3-`
+echo CUR_WKBRANCH=$CUR_WKBRANCH
+
 echo co master
 git checkout master
 
 echo rebase origin/master
 git rebase origin/master
+
+echo co $CUR_WKBRANCH
+git checkout $CUR_WKBRANCH
+
 popd
 
 echo sync webkit git
@@ -29,7 +36,11 @@ echo sync webkit git
 
 #gclient
 echo gclient sync
+if test "x$OSTYPE" != "xcygwin"; then
 gclient sync -j16
+else
+gclient sync
+fi
 
 # all done :)
 echo co $CUR_BRANCH
