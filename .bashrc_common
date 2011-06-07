@@ -23,4 +23,6 @@ alias gs='git status'
 
 alias chrome_clang_env='source ~/home/chrome_clang_env'
 
-
+if test `uname` == Darwin; then
+alias mt='mvim --remote-tab'
+fi
