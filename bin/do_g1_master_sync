@@ -3,6 +3,7 @@ pushd `cat ~/.markutils/m1`
 
 echo fetch
 git fetch
+git remote prune origin
 
 echo co trunk
 if ! git checkout trunk; then
@@ -17,6 +18,7 @@ git rebase origin/trunk
 pushd third_party/WebKit
 echo fetch webkit
 git fetch origin
+git remote prune origin
 
 echo co master
 if ! git checkout master; then
@@ -32,11 +34,10 @@ popd
 echo sync webkit git
 ./tools/sync-webkit-git.py
 
-#gclient
+# checkout gclient on webkit
 pushd third_party/WebKit
 echo co gclient
 git checkout gclient
-
 popd
 
 # angle
@@ -48,7 +49,7 @@ if test -e ./third_party/angle/.git; then
     echo Could not checkout master
     exit
   fi
-  git pull
+  git svn rebase
 
   popd
 fi
