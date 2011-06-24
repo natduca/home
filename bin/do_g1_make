@@ -7,7 +7,7 @@ if test `pwd` != `cat ~/.markutils/m1`; then
         if ! `is_subdir . $tmp`; then
           make
           exit
-	fi
+        fi
       else
         make
         exit
@@ -24,17 +24,25 @@ echo pushd `cat ~/.markutils/m1`
 pushd `cat ~/.markutils/m1`
 
 if test `uname` = Darwin; then
+  # Darwin
+  if test -e Makefile; then
+  echo Running make -j$CPUC $MA
+  make -j15 $MA
+  else
+  echo Running xcodebuild $MA
+  xcodebuild $MA
+  fi
 
-if test -e Makefile; then
-echo Running make -j$CPUC $MA
-make -j15 $MA
 else
-echo Running xcodebuild $MA
-xcodebuild $MA
-fi
+  # Non-darwin
+  # ninja file present?
+  if test -e build.ninja; then
+    BUILD=ninja
+  else
+    BUILD=make -j $CPUC
+  fi
 
-else
-echo Running make -j15 $MA
-make -j15 $MA
+  echo Running $BUILD $MA
+  $BUILD $MA
 fi
 popd
