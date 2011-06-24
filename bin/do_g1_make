@@ -39,10 +39,10 @@ else
   if test -e build.ninja; then
     BUILD=ninja
   else
-    BUILD=make -j $CPUC
+    BUILD=make
   fi
 
-  echo Running $BUILD $MA
-  $BUILD $MA
+  echo Running $BUILD -j $CPUC $MA
+  $BUILD -j $CPUC $MA
 fi
 popd
