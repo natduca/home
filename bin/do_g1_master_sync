@@ -1,13 +1,15 @@
 #!/bin/sh
 pushd `cat ~/.markutils/m1`
-CUR_BRANCH=`git branch | grep ^\* | cut -c 3-`
-echo CUR_BRANCH=$CUR_BRANCH
 
 echo fetch
 git fetch
+git remote prune origin
 
 echo co trunk
-git checkout trunk
+if ! git checkout trunk; then
+  echo Failed to checkout trunk.
+  exit
+fi
 
 echo rebase origin/trunk
 git rebase origin/trunk
@@ -16,12 +18,13 @@ git rebase origin/trunk
 pushd third_party/WebKit
 echo fetch webkit
 git fetch origin
-
-CUR_WKBRANCH=`git branch | grep ^\* | cut -c 3-`
-echo CUR_WKBRANCH=$CUR_WKBRANCH
+git remote prune origin
 
 echo co master
-git checkout master
+if ! git checkout master; then
+  echo Failed to checkout mater
+  exit
+fi
 
 echo rebase origin/master
 git rebase origin/master
@@ -31,12 +34,25 @@ popd
 echo sync webkit git
 ./tools/sync-webkit-git.py
 
-#gclient
+# checkout gclient on webkit
 pushd third_party/WebKit
 echo co gclient
 git checkout gclient
-
 popd
+
+# angle
+if test -e ./third_party/angle/.git; then
+  echo angle is git
+  pushd ./third_party/angle
+
+  if ! git checkout master; then
+    echo Could not checkout master
+    exit
+  fi
+  git svn rebase
+
+  popd
+fi
 
 echo gclient sync
 if test "x$OSTYPE" != "xcygwin"; then
@@ -45,13 +61,7 @@ else
 gclient sync
 fi
 
-echo co $CUR_WKBRANCH
-pushd third_party/WebKit
-git checkout $CUR_WKBRANCH
-popd
 
 # all done :)
-echo co $CUR_BRANCH
-git checkout $CUR_BRANCH
-echo You still need to rebase your active branch
+echo You still need to restore and rebase your active branch
 popd
