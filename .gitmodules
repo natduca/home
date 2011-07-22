@@ -1,0 +1,6 @@
+[submodule "vimrc/vim-pathogen"]
+	path = vimrc/vim-pathogen
+	url = http://github.com/tpope/vim-pathogen.git
+[submodule "vimrc/bundle/quickopen"]
+	path = vimrc/bundle/quickopen
+	url = git@github.com:natduca/quickopen.git
