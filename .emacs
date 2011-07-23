@@ -189,8 +189,12 @@
          (font . "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
          )))
 
-(menu-bar-mode 0)
-(tool-bar-mode 0)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode 0))
+  
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode 0))
+
 
 (global-font-lock-mode '1) ;syntax highlight
 
@@ -201,12 +205,16 @@
 (global-hl-line-mode 1) ; show current line
 (set-face-background 'hl-line "#0F0F0F")
 
-(global-linum-mode 1) ;line numbers
-(set-face-background 'linum "#0F0F0F")
+(when (fboundp 'global-linum-mode)
+  (global-linum-mode 1)  ;line numbers
+  (set-face-background 'linum "#0F0F0F")
+  )
 
-(setq fringe-style 'minimal) ; shrink the fringe
-(set-fringe-mode 1)
-(set-face-background 'fringe "#0F0F0F")
+(when (fboundp 'set-fringe-mode)
+  (setq fringe-style 'minimal) ; shrink the fringe
+  (set-fringe-mode 1)
+  (set-face-background 'fringe "#0F0F0F")
+  )
 
 (setq make-backup-files nil) ;backups
 
@@ -250,10 +258,10 @@
 (global-set-key [M-p] 'previous-error)
 
 ;;  if possible...
-(catch
+(when (locate-library "goog")
   (load-library "goog")
   )
 
-(catch
+(when (locate-library "column-marker")
   (load-library "column-marker")
   )
