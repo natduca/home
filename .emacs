@@ -6,6 +6,12 @@
     (normal-top-level-add-subdirs-to-load-path)))
 ;;(setq js2-mode-dev-mode-p 1)
 
+(let ((home-el-dir (expand-file-name "~/home/elisp")))
+  (when (file-exists-p home-el-dir)
+    (let ((default-directory home-el-dir))
+      (normal-top-level-add-to-load-path '("."))
+      (normal-top-level-add-subdirs-to-load-path))))
+
 ; all modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
@@ -265,3 +271,5 @@
 (when (locate-library "column-marker")
   (load-library "column-marker")
   )
+
+(require 'quickopen)
