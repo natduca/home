@@ -4,12 +4,14 @@
 # that processes file requests through Grit's flattening process
 # This allows you to debug WebUI pages without having to build all
 # of chrome. :)
-
-import sys
+import logging
 import os
-import SimpleHTTPServer
-import SocketServer
+import select
+import sys
 import time
+import urlparse
+import BaseHTTPServer
+import SimpleHTTPServer
 
 gritpath = os.path.abspath("../../../tools/grit")
 if not os.path.exists(gritpath):
@@ -54,25 +56,41 @@ def sendContent(ext,req,msg):
   req.end_headers()
   req.wfile.write(msg)
 
-def send404(req):
-  msg = "Unrecognized URL"
-  req.send_response(404)
-  req.send_header('Last-Modified', req.date_time_string(time.time()))
-  req.send_header('Content-Length', len(msg))
-  req.send_header('Content-Type', 'text/plain')
-  req.end_headers()
-  req.wfile.write(msg)
+def sendError(req, code):
+  try:
+    msg = "Unrecognized URL"
+    req.send_response(code)
+    req.send_header('Last-Modified', req.date_time_string(time.time()))
+    req.send_header('Content-Length', len(msg))
+    req.send_header('Content-Type', 'text/plain')
+    req.end_headers()
+    req.wfile.write(msg)
+  except:
+    pass
 
-class MyHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
   def __init__(self,*args):
     SimpleHTTPServer.SimpleHTTPRequestHandler.__init__(self,*args)
 
   def do_GET(req):
-    if req.path == "" or req.path == "/":
+    (_, _, path, _, _) = urlparse.urlsplit(req.path)
+    if path == "":
+      path = "/"
+    if not path.startswith("/"):
+      raise Exception("Wtf")
+
+#    import pdb; pdb.set_trace()
+    rpath = os.path.realpath(os.path.join(os.getcwd(), path[1:]))
+    if not rpath.startswith(os.getcwd()) or not os.path.exists(rpath):
+      sendError(req, 404)
+      return
+    if os.path.isdir(rpath):
       SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(req)
       return
-    rpath = req.path[1:]
-    if os.path.exists(rpath):
+    if not os.path.splitext(rpath)[1].lower() in ('.html', '.htm'):
+      SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(req)
+      return
+    else:
       s = grit_inline.InlineToString(rpath, None)
       s_ = s.replace("chrome://resources/", "./shared/")
       ext = os.path.splitext(rpath)[1]
@@ -80,14 +98,34 @@ class MyHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         s_ += jsttext
       sendContent(ext, req, s_)
       return
-    else:
-      send404(req)
 
-httpd = SocketServer.TCPServer(("", PORT), MyHTTPRequestHandler)
-print "Fake DOM_UI started at http://localhost:%i/" % PORT
+class Daemon(BaseHTTPServer.HTTPServer):
+  def __init__(self, host, port):
+    BaseHTTPServer.HTTPServer.__init__(self, (host, port), RequestHandler)
+    self.port_ = port
 
-try:
-  httpd.serve_forever()
-except KeyboardInterrupt:
-  pass
-httpd.server_close()
+  def on_exit(self, m, verb, data):
+    logging.info("Exiting upon request.")
+    self.shutdown()
+
+  def serve_forever(self):
+    logging.info('Fake DOM_UI started on port %d', self.port_)
+    self.is_running_ = True
+    while self.is_running_:
+      delay = 0.2
+      r, w, e = select.select([self], [], [], delay)
+      if r:
+        self.handle_request()
+
+  def shutdown(self):
+    self.is_running_ = False
+    self.server_close()
+    return 1
+
+if __name__ == "__main__":
+  d = Daemon("", PORT)
+  try:
+    d.serve_forever()
+  except KeyboardInterrupt:
+    pass
+  d.shutdown()
