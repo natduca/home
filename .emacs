@@ -273,3 +273,51 @@
   )
 
 (require 'quickopen)
+
+
+(defun other-file-strrchr(x y)
+  (with-temp-buffer
+    (insert x)
+    (condition-case ex
+        (progn
+          (search-backward y)
+          (- (point) 1))
+      ('error -1))))
+(defun other-file-splitext(x)
+         (let ((i (other-file-strrchr x ".")))
+           (if (/= i -1)
+               (cons
+                (substring x 0 i)
+                (substring x i))
+             (cons x ""))))
+
+(defun other-file(x)
+  (let* ((split (other-file-splitext x))
+         (basename (car split))
+         (ext (downcase (cdr split))))
+    (defun goto(exts)
+      (message (format "checking %s" exts))
+      (let ((fileopts (mapcar
+                         (lambda (ex) (concat basename ex))
+                         exts)))
+        (find-if 'file-exists-p fileopts)
+        ))
+    (cond
+     ((member ext '(".c" ".cpp" ".cc"))
+              (goto '(".h")))
+     ((member ext '(".h"))
+              (goto '(".inl" ".cpp" ".cc" ".c")))
+     ((member ext '(".inl"))
+              (goto '(".cpp" ".cc" ".c")))
+     )))
+
+(defun find-other-file-other-window()
+ (interactive "")
+ (if (and (buffer-file-name)
+          (file-exists-p (buffer-file-name)))
+     (let ((target (other-file (buffer-file-name))))
+       (if target
+           (find-file-other-window target)
+         (message "No match found")))
+   (message "Not a file")))
+(global-set-key (kbd "M-o") 'find-other-file-other-window)
