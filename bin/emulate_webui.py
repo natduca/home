@@ -18,7 +18,7 @@ if not os.path.exists(gritpath):
   raise Exception("Could not find grit!")
 
 sys.path.append(gritpath)
-import grit.format.html_inline as grit_inline
+import grit.format.html_inline
 
 PORT = 8080
 
@@ -91,7 +91,7 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
       SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(req)
       return
     else:
-      s = grit_inline.InlineToString(rpath, None)
+      s = grit.format.html_inline.InlineToString(rpath, None, allow_external_script = True)
       s_ = s.replace("chrome://resources/", "./shared/")
       ext = os.path.splitext(rpath)[1]
       if ext == ".html":
