@@ -296,7 +296,6 @@
          (basename (car split))
          (ext (downcase (cdr split))))
     (defun goto(exts)
-      (message (format "checking %s" exts))
       (let ((fileopts (mapcar
                          (lambda (ex) (concat basename ex))
                          exts)))
@@ -311,6 +310,15 @@
               (goto '(".cpp" ".cc" ".c")))
      )))
 
+(defun find-other-file()
+ (interactive "")
+ (if (and (buffer-file-name)
+          (file-exists-p (buffer-file-name)))
+     (let ((target (other-file (buffer-file-name))))
+       (if target
+           (find-file target)
+         (message "No match found")))
+   (message "Not a file")))
 (defun find-other-file-other-window()
  (interactive "")
  (if (and (buffer-file-name)
@@ -320,4 +328,4 @@
            (find-file-other-window target)
          (message "No match found")))
    (message "Not a file")))
-(global-set-key (kbd "M-o") 'find-other-file-other-window)
+(global-set-key (kbd "M-o") 'find-other-file)
