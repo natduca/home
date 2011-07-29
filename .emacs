@@ -354,4 +354,5 @@
          (message "No match found")))
    (message "Not a file")))
 (global-set-key (kbd "M-o") 'find-other-file)
+(global-set-key (kbd "M-i") 'find-other-file-other-window)
 
