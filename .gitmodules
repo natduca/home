@@ -4,3 +4,6 @@
 [submodule "quickopen"]
 	path = quickopen
 	url = git@github.com:natduca/quickopen.git
+[submodule "trace_event"]
+	path = trace_event
+	url = git@github.com:natduca/trace_event.git

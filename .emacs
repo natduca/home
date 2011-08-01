@@ -183,9 +183,13 @@
 
 ; Look n feel
 (set-frame-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
-(set-background-color "black")
-(set-foreground-color "white")
-(set-cursor-color "white")
+
+(if (fboundp 'window-system)
+    (progn
+      (set-background-color "black")
+      (set-foreground-color "white")
+      (set-cursor-color "white")
+      ))
 
 (setq default-frame-alist
       (append default-frame-alist
@@ -208,8 +212,11 @@
 
 (mouse-avoidance-mode 'exile) ;mouse
 
-(global-hl-line-mode 1) ; show current line
-(set-face-background 'hl-line "#0F0F0F")
+(if (fboundp 'window-system)
+    (progn
+      (global-hl-line-mode 1) ; show current line
+      (set-face-background 'hl-line "#0F0F0F")
+      ))
 
 (when (fboundp 'global-linum-mode)
   (global-linum-mode 1)  ;line numbers
@@ -294,6 +301,11 @@
 (defun other-file(x)
   (let* ((split (other-file-splitext x))
          (basename (car split))
+         (basename_without_test_suffix
+          (if (/= (other-file-strrchr basename "_test") -1)
+              (substring basename 0 (other-file-strrchr basename "_test"))
+            nil))
+         (basename_has_test_suffix (not (not basename_without_test_suffix)))
          (ext (downcase (cdr split))))
     (defun goto(exts)
       (let ((fileopts (mapcar
@@ -301,14 +313,27 @@
                          exts)))
         (find-if 'file-exists-p fileopts)
         ))
+    (defun goto-fullname(fullname)
+      (message (format "checking %s" fullname))
+      (if (file-exists-p fullname)
+          fullname
+        nil))
     (cond
      ((member ext '(".c" ".cpp" ".cc"))
-              (goto '(".h")))
+      (goto '(".h")))
      ((member ext '(".h"))
-              (goto '(".inl" ".cpp" ".cc" ".c")))
+      (goto '(".inl" ".cpp" ".cc" ".c")))
      ((member ext '(".inl"))
-              (goto '(".cpp" ".cc" ".c")))
-     )))
+      (goto '(".cpp" ".cc" ".c")))
+     ((member ext '(".py"))
+      (message (format "processing with basename=%s" basename))
+      (if basename_has_test_suffix
+          (goto-fullname (concat basename_without_test_suffix ext))
+        (goto-fullname (concat basename "_test.py")))
+      )
+     )
+    )
+  )
 
 (defun find-other-file()
  (interactive "")
@@ -328,4 +353,14 @@
            (find-file-other-window target)
          (message "No match found")))
    (message "Not a file")))
+(defun find-other-file()
+ (interactive "")
+ (if (and (buffer-file-name)
+          (file-exists-p (buffer-file-name)))
+     (let ((target (other-file (buffer-file-name))))
+       (if target
+           (find-file target)
+         (message "No match found")))
+   (message "Not a file")))
 (global-set-key (kbd "M-o") 'find-other-file)
+(global-set-key (kbd "M-i") 'find-other-file-other-window)

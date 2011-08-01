@@ -1,0 +1,10 @@
+[user]
+  name = Nat Duca
+  email = natduca@gmail.com
+[color]
+  status = auto
+  diff = auto
+  branch = auto
+[add]
+  ignoreErrors = true
+	ignore-errors = true
