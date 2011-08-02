@@ -20,17 +20,18 @@ CPUC=`cat ~/.markutils/g1_make_cpucount`
 if test ! -e ~/.markutils/g1_make_args; then touch ~/.markutils/g1_make_args; fi
 MA=`cat ~/.markutils/g1_make_args`
 
-echo pushd `cat ~/.markutils/m1`
-pushd `cat ~/.markutils/m1`
+BD=`cat ~/.markutils/m1`
 
 if test `uname` = Darwin; then
   # Darwin
   if test -e Makefile; then
   echo Running make -j$CPUC $MA
-  make -j15 $MA
+  make -j15 -C $BD $MA
   else
   echo Running xcodebuild $MA
+  pushd $BD
   xcodebuild $MA
+  popd
   fi
 
 else
@@ -43,6 +44,5 @@ else
   fi
 
   echo Running $BUILD -j $CPUC $MA
-  $BUILD -j $CPUC $MA
+  $BUILD -j $CPUC -C $BD $MA
 fi
-popd
