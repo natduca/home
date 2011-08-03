@@ -356,3 +356,8 @@
 (global-set-key (kbd "M-o") 'find-other-file)
 (global-set-key (kbd "M-i") 'find-other-file-other-window)
 
+(global-set-key (kbd "M-n")
+ (lambda ()
+  (interactive "")
+  (bury-buffer (current-buffer))
+  (switch-to-buffer (other-buffer (current-buffer) 1)) 1))
