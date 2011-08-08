@@ -167,7 +167,12 @@
 (global-set-key [f12] 'shrink-window)
 
 
-(global-set-key (quote [C-tab]) 'other-window)
+(global-set-key [C-tab] 'other-window)
+(global-set-key (kbd "s-]") 'other-window)
+(global-set-key (kbd "s-[")
+                (lambda ()
+                  (interactive "")
+                  (other-window -1)))
 (global-set-key [f2] 'other-frame)
 
 (global-set-key "\C-s" 'isearch-forward-regexp)
@@ -364,3 +369,9 @@
    (message "Not a file")))
 (global-set-key (kbd "M-o") 'find-other-file)
 (global-set-key (kbd "M-i") 'find-other-file-other-window)
+
+(global-set-key (kbd "M-n")
+ (lambda ()
+  (interactive "")
+  (bury-buffer (current-buffer))
+  (switch-to-buffer (other-buffer (current-buffer) 1)) 1))

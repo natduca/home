@@ -7,3 +7,6 @@
 [submodule "trace_event"]
 	path = trace_event
 	url = git@github.com:natduca/trace_event.git
+[submodule "trace_event_viewer"]
+	path = trace_event_viewer
+	url = git@github.com:natduca/trace_event_viewer.git
