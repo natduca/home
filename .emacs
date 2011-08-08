@@ -167,7 +167,7 @@
 (global-set-key [f12] 'shrink-window)
 
 
-(global-set-key (kbd "C-TAB") 'other-window)
+(global-set-key [C-tab] 'other-window)
 (global-set-key (kbd "s-]") 'other-window)
 (global-set-key (kbd "s-[")
                 (lambda ()
