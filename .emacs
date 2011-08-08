@@ -167,7 +167,12 @@
 (global-set-key [f12] 'shrink-window)
 
 
-(global-set-key (quote [C-tab]) 'other-window)
+(global-set-key (kbd "C-TAB") 'other-window)
+(global-set-key (kbd "s-]") 'other-window)
+(global-set-key (kbd "s-[")
+                (lambda ()
+                  (interactive "")
+                  (other-window -1)))
 (global-set-key [f2] 'other-frame)
 
 (global-set-key "\C-s" 'isearch-forward-regexp)
