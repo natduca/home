@@ -19,6 +19,7 @@ pushd third_party/WebKit
 echo fetch webkit
 git fetch origin
 git remote prune origin
+git svn fetch
 
 echo co master
 if ! git checkout master; then
@@ -28,6 +29,7 @@ fi
 
 echo rebase origin/master
 git rebase origin/master
+git svn rebase
 
 popd
 
