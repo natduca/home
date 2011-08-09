@@ -303,6 +303,16 @@
                 (substring x i))
              (cons x ""))))
 
+(unless (fboundp 'find-if)
+  (defun find-if(predicate list)
+    "Find first item satisfying PREDICATE in LIST."
+    (let (result)
+      (while (and list (not result))
+        (if (funcall predicate (car list))
+            (setq result (car list)))
+        (setq list (cdr list)))
+      result)))
+
 (defun other-file(x)
   (let* ((split (other-file-splitext x))
          (basename (car split))
