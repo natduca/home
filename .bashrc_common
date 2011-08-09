@@ -17,7 +17,9 @@ export PATH=$PATH:$H/bin
 alias ga='git add .'
 alias gc='git commit -m .'
 alias gca='git commit --amend'
+alias gcaa='git commit -a --amend'
 alias gs='git status'
+alias gg='git grep'
 
 alias chrome_clang_env='source ~/home/chrome_clang_env'
 
