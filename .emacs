@@ -1,7 +1,7 @@
 (when (and
-       (file-exists-p "/home/nduca/.emacs.d/")
-       (file-exists-p "/home/nduca/.emacs.d/site-lisp/"))
-  (let ((default-directory "/home/nduca/.emacs.d/site-lisp/"))
+       (file-exists-p (expand-file-name "~/.emacs.d/"))
+       (file-exists-p (expand-file-name "~/.emacs.d/site-lisp/")))
+  (let ((default-directory (expand-file-name "~/.emacs.d/site-lisp/")))
     (normal-top-level-add-to-load-path '("."))
     (normal-top-level-add-subdirs-to-load-path)))
 ;;(setq js2-mode-dev-mode-p 1)
