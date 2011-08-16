@@ -151,11 +151,6 @@
 (add-hook 'latex-mode-hook 'my-latex-common-hook)
 
 
-; Child files
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(load-file "/home/build/public/eng/elisp/google.el")
-
-
 ; Keybindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key [f4] 'kill-this-buffer)
