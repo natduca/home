@@ -380,3 +380,9 @@
   (interactive "")
   (bury-buffer (current-buffer))
   (switch-to-buffer (other-buffer (current-buffer) 1)) 1))
+
+(global-set-key (kbd "C-M-o")
+                (lambda ()
+                  (interactive "")
+                  (view-buffer-other-window "*compilation*")
+                  ))
