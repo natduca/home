@@ -33,7 +33,10 @@ if test `uname` = Darwin; then
   xcodebuild $MA
   popd
   fi
-
+elif uname | grep CYGWIN > /dev/null; then
+  P=`cygpath -ws /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE`
+  P_=`cygpath $P`
+  $P_/devenv.com /build Debug `cygpath -w $BD/chrome/chrome.sln` /project `cygpath -w $BD/chrome/chrome.vcproj`
 else
   # Non-darwin
   # ninja file present?
