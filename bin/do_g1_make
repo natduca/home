@@ -25,13 +25,18 @@ BD=`cat ~/.markutils/m1`
 if test `uname` = Darwin; then
   # Darwin
   if test -e Makefile; then
-  echo Running make -j$CPUC $MA
-  make -j15 -C $BD $MA
+    echo Running make -j$CPUC $MA
+    make -j15 -C $BD $MA
   else
-  echo Running xcodebuild $MA
-  pushd $BD
-  xcodebuild $MA
-  popd
+    pushd $BD
+    if which goma-xcodebuild > /dev/null; then
+      echo Running goma-xcodebuild $MA
+      goma-xcodebuild xcodebuild $MA
+    else
+      echo Running xcodebuild $MA
+      xcodebuild $MA
+    fi
+    popd
   fi
 elif uname | grep CYGWIN > /dev/null; then
   P=`cygpath -ws /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE`
