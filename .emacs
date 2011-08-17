@@ -386,3 +386,9 @@
                   (interactive "")
                   (view-buffer-other-window "*compilation*")
                   ))
+
+(global-set-key (kbd "<C-s-268632079>")
+                (lambda ()
+                  (interactive "")
+                  (view-buffer-other-window "*compilation*")
+                  ))
