@@ -33,6 +33,7 @@
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
   (local-set-key [(control r) j] 'eval-region)
+  (nyan-mode 1)
   (when (and
          (fboundp 'column-marker-1)
          (not (is-webkit)))
@@ -280,6 +281,7 @@
   )
 
 (require 'quickopen)
+(require 'nyan-mode)
 
 
 (defun other-file-strrchr(x y)
