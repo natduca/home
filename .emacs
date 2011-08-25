@@ -64,7 +64,6 @@
 (defun my-c-common-hook ()
   (all-mode-hook)
   (when (is-webkit)
-    (message "Detected a webkit file. Using 4-space indentation.")
     (setq c-basic-offset 4))
   )
 (add-hook 'c++-mode-common-hook 'my-c-common-hook)
@@ -282,6 +281,7 @@
 
 (require 'quickopen)
 (require 'nyan-mode)
+(scroll-bar-mode nil)
 
 
 (defun other-file-strrchr(x y)
@@ -394,3 +394,14 @@
                   (interactive "")
                   (view-buffer-other-window "*compilation*")
                   ))
+
+(defun revert-all-buffers ()
+  (interactive "")
+   (mapcar (lambda (b)
+             (with-current-buffer b
+                   (when (buffer-file-name)
+                     (message (format "Reverting %s" (buffer-file-name)))
+                     (revert-buffer 1 1)
+                     )))
+           (buffer-list))
+   (message "REVERT ALL THE BUFFERS!!!!"))
