@@ -1,0 +1,10 @@
+#!/bin/sh
+if test ! -e ~/.markutils/g1_make_type; then
+	echo Debug > ~/.markutils/g1_make_type
+fi
+
+if test $# = 0; then
+	cat ~/.markutils/g1_make_type
+else
+	echo $* > ~/.markutils/g1_make_type
+fi

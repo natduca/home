@@ -15,42 +15,51 @@ if test `pwd` != `cat ~/.markutils/m1`; then
   fi
 fi
 if test ! -e ~/.markutils/g1_make_cpucount; then echo 1 > ~/.markutils/g1_make_cpucount; fi
-CPUC=`cat ~/.markutils/g1_make_cpucount`
+CPU_COUNT=`cat ~/.markutils/g1_make_cpucount`
 
 if test ! -e ~/.markutils/g1_make_args; then touch ~/.markutils/g1_make_args; fi
-MA=`cat ~/.markutils/g1_make_args`
+MAKE_ARGS=`cat ~/.markutils/g1_make_args`
 
-BD=`cat ~/.markutils/m1`
+if test ! -e ~/.markutils/g1_make_type; then echo Debug > ~/.markutils/g1_make_type; fi
+MAKE_TYPE=`cat ~/.markutils/g1_make_type`
+
+if test ! -e ~/.markutils/g1_make_project; then touch ~/.markutils/g1_make_project; fi
+MAKE_PROJECT=`cat ~/.markutils/g1_make_project`
+
+BUILD_DIR=`cat ~/.markutils/m1`
 
 if test `uname` = Darwin; then
   # Darwin
   if test -e Makefile; then
-    echo Running make -j$CPUC $MA
-    make -j15 -C $BD $MA
+    echo Running make -j$CPU_COUNT $MAKE_ARGS
+    make -j15 -C $BUILD_DIR $MAKE_ARGS
   else
-    pushd $BD
+    pushd $BUILD_DIR
     if which goma-xcodebuild > /dev/null; then
-      echo Running goma-xcodebuild $MA
-      goma-xcodebuild xcodebuild $MA
+      echo Running goma-xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
+      goma-xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
     else
-      echo Running xcodebuild $MA
-      xcodebuild $MA
+      echo Running xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
+      xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
     fi
     popd
   fi
 elif uname | grep CYGWIN > /dev/null; then
   P=`cygpath -ws /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE`
   P_=`cygpath $P`
-  $P_/devenv.com /build Debug `cygpath -w $BD/chrome/chrome.sln` /project `cygpath -w $BD/chrome/chrome.vcproj`
+  $P_/devenv.com /build $MAKE_TYPE `cygpath -w $BUILD_DIR/$MAKE_PROJECT/$MAKE_PROJECT.sln` /project `cygpath -w $BUILD_DIR/$MAKE_PROJECT/$MAKE_PROJECT.vcproj`
 else
   # Non-darwin
   # ninja file present?
-  if test -e build.ninja; then
+  if test -e $BUILD_DIR/build.ninja; then
     BUILD=ninja
+  elif test -e $BUILD_DIR/out/$MAKE_TYPE/build.ninja; then
+    BUILD=ninja
+    BUILD_DIR=$BUILD_DIR/out/$MAKE_TYPE/
   else
     BUILD=make
   fi
 
-  echo Running $BUILD -j $CPUC $MA
-  $BUILD -j $CPUC -C $BD $MA
+  echo Running $BUILD -j $CPU_COUNT $MAKE_ARGS
+  $BUILD -j $CPU_COUNT -C $BUILD_DIR $MAKE_ARGS
 fi

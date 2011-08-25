@@ -1,0 +1,10 @@
+#!/bin/sh
+if test ! -e ~/.markutils/g1_make_project; then
+	touch ~/.markutils/g1_make_project
+fi
+
+if test $# = 0; then
+	cat ~/.markutils/g1_make_project
+else
+	echo $* > ~/.markutils/g1_make_project
+fi
