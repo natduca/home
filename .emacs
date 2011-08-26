@@ -1,16 +1,51 @@
+;; Search paths
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (when (and
        (file-exists-p (expand-file-name "~/.emacs.d/"))
        (file-exists-p (expand-file-name "~/.emacs.d/site-lisp/")))
   (let ((default-directory (expand-file-name "~/.emacs.d/site-lisp/")))
     (normal-top-level-add-to-load-path '("."))
     (normal-top-level-add-subdirs-to-load-path)))
-;;(setq js2-mode-dev-mode-p 1)
 
 (let ((home-el-dir (expand-file-name "~/home/elisp")))
   (when (file-exists-p home-el-dir)
     (let ((default-directory home-el-dir))
       (normal-top-level-add-to-load-path '("."))
       (normal-top-level-add-subdirs-to-load-path))))
+
+;; Projects
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun is-webkit ()
+  (string-match "third_party/WebKit/" (buffer-file-name)))
+
+;; Util functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun strrchr(x y)
+  (with-temp-buffer
+    (insert x)
+    (condition-case ex
+        (progn
+          (search-backward y)
+          (- (point) 1))
+      ('error -1))))
+
+(defun splitext(x)
+  (let ((i (strrchr x ".")))
+    (if (/= i -1)
+        (cons
+         (substring x 0 i)
+         (substring x i))
+      (cons x ""))))
+
+(unless (fboundp 'find-if)
+  (defun find-if(predicate list)
+    "Find first item satisfying PREDICATE in LIST."
+    (let (result)
+      (while (and list (not result))
+        (if (funcall predicate (car list))
+            (setq result (car list)))
+        (setq list (cdr list)))
+      result)))
 
 ; all modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -32,7 +67,6 @@
   (setq indent-tabs-mode nil)
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
-  (local-set-key [(control r) j] 'eval-region)
   (nyan-mode 1)
   (when (and
          (fboundp 'column-marker-1)
@@ -41,23 +75,6 @@
   (when (fboundp 'show-ws-highlight-trailing-whitespace)
     (show-ws-highlight-trailing-whitespace))
   )
-
-(defun save-and-compile()
- (interactive "")
- (save-buffer 0)
- (compile "/bin/bash -l -c \"do_g1_make\"")
- )
-
-(defun next-error-and-center()
-  (interactive "")
-  (next-error)
-)
-
-(global-set-key "\C-c\C-v" 'save-and-compile)
-(global-set-key "\C-c\C-f" 'next-error-and-center)
-
-(defun is-webkit ()
-  (string-match "third_party/WebKit/" (buffer-file-name)))
 
 ; c/c++
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,6 +94,17 @@
   (local-set-key "\C-c\C-v" 'save-and-compile)
   )
 (add-hook 'html-mode-hook 'my-html-mode-hook)
+
+; lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my-lisp-mode-hook ()
+  (local-set-key "\C-c\C-d" 'eval-defun)
+  (local-set-key "\C-c\C-r" 'eval-region)
+  )
+(add-hook 'lisp-mode-hook 'my-lisp-mode-hook)
+(add-hook 'emacs-lisp-mode-hook 'my-lisp-mode-hook)
+
 
 ; todoo
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -150,172 +178,14 @@
   )
 (add-hook 'latex-mode-hook 'my-latex-common-hook)
 
-
-; Keybindings
+;; Other file, next-file, revert-all-buffers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key [f4] 'kill-this-buffer)
-(global-set-key [delete] 'delete-char)
-(global-set-key [kp-delete] 'delete-char)
-(global-set-key [f9] 'shrink-window-horizontally)
-(global-set-key [f10] 'enlarge-window-horizontally)
-(global-set-key [f11] 'enlarge-window)
-(global-set-key [f12] 'shrink-window)
-
-
-(global-set-key [C-tab] 'other-window)
-(global-set-key (kbd "s-]") 'other-window)
-(global-set-key (kbd "s-[")
-                (lambda ()
-                  (interactive "")
-                  (other-window -1)))
-(global-set-key [f2] 'other-frame)
-
-(global-set-key "\C-s" 'isearch-forward-regexp)
-(global-unset-key "\C-r")
-
-(global-set-key "\M-i" 'indent-region)
-
-(global-unset-key "\C-r")
-(global-set-key "\C-r\C-e" 'replace-string)
-(global-set-key "\C-r\C-q" 'query-replace)
-(global-set-key "\C-r\C-r" 'replace-regexp)
-
-
-; Look n feel
-(set-frame-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
-
-(if (fboundp 'window-system)
-    (progn
-      (set-background-color "black")
-      (set-foreground-color "white")
-      (set-cursor-color "white")
-      ))
-
-(setq default-frame-alist
-      (append default-frame-alist
-       '((background-color . "black")
-         (foreground-color . "white")
-         (cursor-color . "white")
-         (font . "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
-         )))
-
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode 0))
-  
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode 0))
-
-
-(global-font-lock-mode '1) ;syntax highlight
-
-(transient-mark-mode '1) ;mark
-
-(mouse-avoidance-mode 'exile) ;mouse
-
-(if (fboundp 'window-system)
-    (progn
-      (global-hl-line-mode 1) ; show current line
-      (set-face-background 'hl-line "#0F0F0F")
-      ))
-
-(when (fboundp 'global-linum-mode)
-  (global-linum-mode 1)  ;line numbers
-  (set-face-background 'linum "#0F0F0F")
-  )
-
-(when (fboundp 'set-fringe-mode)
-  (setq fringe-style 'minimal) ; shrink the fringe
-  (set-fringe-mode 1)
-  (set-face-background 'fringe "#0F0F0F")
-  )
-
-(setq make-backup-files nil) ;backups
-
-; Things that don't quite work yet
-(global-set-key [f6] (lambda ()
-                       (interactive "")
-                       (message "making frame on 10.98.8.119:0")
-                       (make-frame-on-display "10.98.8.119:0")
-                       ))
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
-
-
-;; Shift the selected region right if distance is postive, left if
-;; negative
-(defun shift-region (distance)
-  (let ((mark (mark)))
-    (save-excursion
-      (indent-rigidly (region-beginning) (region-end) distance)
-      (push-mark mark t t)
-      ;; Tell the command loop not to deactivate the mark
-      ;; for transient mark mode
-      (setq deactivate-mark nil))))
-
-(defun shift-right ()
-  (interactive)
-  (shift-region 1))
-
-(defun shift-left ()
-  (interactive)
-  (shift-region -1))
-
-(global-set-key [C-S-left] 'shift-left)
-(global-set-key [C-S-right] 'shift-right)
-
-(global-set-key [M-n] 'next-error)
-(global-set-key [M-p] 'previous-error)
-
-;;  if possible...
-(when (locate-library "goog")
-  (load-library "goog")
-  )
-
-(when (locate-library "column-marker")
-  (load-library "column-marker")
-  )
-
-(require 'quickopen)
-(require 'nyan-mode)
-(scroll-bar-mode nil)
-
-
-(defun other-file-strrchr(x y)
-  (with-temp-buffer
-    (insert x)
-    (condition-case ex
-        (progn
-          (search-backward y)
-          (- (point) 1))
-      ('error -1))))
-(defun other-file-splitext(x)
-         (let ((i (other-file-strrchr x ".")))
-           (if (/= i -1)
-               (cons
-                (substring x 0 i)
-                (substring x i))
-             (cons x ""))))
-
-(unless (fboundp 'find-if)
-  (defun find-if(predicate list)
-    "Find first item satisfying PREDICATE in LIST."
-    (let (result)
-      (while (and list (not result))
-        (if (funcall predicate (car list))
-            (setq result (car list)))
-        (setq list (cdr list)))
-      result)))
-
 (defun other-file(x)
-  (let* ((split (other-file-splitext x))
+  (let* ((split (splitext x))
          (basename (car split))
          (basename_without_test_suffix
-          (if (/= (other-file-strrchr basename "_test") -1)
-              (substring basename 0 (other-file-strrchr basename "_test"))
+          (if (/= (strrchr basename "_test") -1)
+              (substring basename 0 (strrchr basename "_test"))
             nil))
          (basename_has_test_suffix (not (not basename_without_test_suffix)))
          (ext (downcase (cdr split))))
@@ -405,3 +275,169 @@
                      )))
            (buffer-list))
    (message "REVERT ALL THE BUFFERS!!!!"))
+
+;; Shiftingx
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun shift-region (distance)
+  (let ((mark (mark)))
+    (save-excursion
+      (indent-rigidly (region-beginning) (region-end) distance)
+      (push-mark mark t t)
+      ;; Tell the command loop not to deactivate the mark
+      ;; for transient mark mode
+      (setq deactivate-mark nil))))
+
+(defun shift-right ()
+  (interactive)
+  (shift-region 1))
+
+(defun shift-left ()
+  (interactive)
+  (shift-region -1))
+
+;; Compilation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun read-file-contents (f)
+  (with-temp-buffer
+    (insert-file-contents f)
+    (replace-string "\n" "")
+    (buffer-substring (point-min) (point-max))))
+
+;; Get the m1 mark and add a trailing slash if needed
+(defun get_g1_dir()
+  (let ((g1 (read-file-contents (expand-file-name "~/.markutils/m1"))))
+    (if (string= (substring g1 -1) "/")
+        g1
+      (concat g1 "/"))))
+
+(defun get_g1_make_type()
+  (read-file-contents (expand-file-name "~/.markutils/g1_make_type")))
+
+;; This function is a bit gross because my "make it make" scripts are split
+;; across elisp and shell scripts. Basically, this function duplicates the logic
+;; that do_g1_make performs in order to figure out what directory do_g1_make
+;; will make from. Its usually get_g1_dir, but with ninja, it changes a bit.
+(defun get_g1_make_dir()
+  (let ((md (get_g1_dir))
+        (mt (get_g1_make_type)))
+    (if (file-exists-p (concat md "out/" mt "/build.ninja"))
+        (concat md "out/" mt "/")
+      md)))
+
+(defun previous-error-and-center()
+  (interactive "")
+  (let ((old_cd default-directory))
+    (previous-error)
+    ))
+(defun next-error-and-center()
+  (interactive "")
+  (let ((old_cd default-directory))
+    (message (format "Old cd %s" old_cd))
+    (next-error)
+    ))
+
+(defun save-and-compile()
+ (interactive "")
+ (save-buffer 0)
+ (cd (get_g1_make_dir))
+ (compile "/bin/bash -l -c \"do_g1_make\"")
+ )
+
+
+(global-set-key "\C-c\C-b" 'previous-error-and-center)
+(global-set-key "\C-c\C-f" 'next-error-and-center)
+(global-set-key "\C-c\C-v" 'save-and-compile)
+
+
+; Keybindings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key [f4] 'kill-this-buffer)
+(global-set-key [delete] 'delete-char)
+(global-set-key [kp-delete] 'delete-char)
+(global-set-key [f9] 'shrink-window-horizontally)
+(global-set-key [f10] 'enlarge-window-horizontally)
+(global-set-key [f11] 'enlarge-window)
+(global-set-key [f12] 'shrink-window)
+
+
+(global-set-key [C-tab] 'other-window)
+(global-set-key (kbd "s-]") 'other-window)
+(global-set-key (kbd "s-[")
+                (lambda ()
+                  (interactive "")
+                  (other-window -1)))
+
+(global-set-key "\C-s" 'isearch-forward-regexp)
+
+(global-unset-key "\C-r")
+(global-set-key "\C-r\C-e" 'replace-string)
+(global-set-key "\C-r\C-q" 'query-replace)
+(global-set-key "\C-r\C-r" 'replace-regexp)
+
+
+; Look n feel
+(set-frame-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
+
+(if (fboundp 'window-system)
+    (progn
+      (set-background-color "black")
+      (set-foreground-color "white")
+      (set-cursor-color "white")
+      ))
+
+(setq default-frame-alist
+      (append default-frame-alist
+       '((background-color . "black")
+         (foreground-color . "white")
+         (cursor-color . "white")
+         (font . "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
+         )))
+
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode 0))
+  
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode 0))
+
+
+(global-font-lock-mode '1) ;syntax highlight
+
+(transient-mark-mode '1) ;mark
+
+(mouse-avoidance-mode 'exile) ;mouse
+
+(if (fboundp 'window-system)
+    (progn
+      (global-hl-line-mode 1) ; show current line
+      (set-face-background 'hl-line "#0F0F0F")
+      ))
+
+(when (fboundp 'global-linum-mode)
+  (global-linum-mode 1)  ;line numbers
+  (set-face-background 'linum "#0F0F0F")
+  )
+
+(when (fboundp 'set-fringe-mode)
+  (setq fringe-style 'minimal) ; shrink the fringe
+  (set-fringe-mode 1)
+  (set-face-background 'fringe "#0F0F0F")
+  )
+
+(setq make-backup-files nil) ;backups
+
+
+(global-set-key [C-S-left] 'shift-left)
+(global-set-key [C-S-right] 'shift-right)
+
+;;  if possible...
+(when (locate-library "goog")
+  (load-library "goog")
+  )
+
+(when (locate-library "column-marker")
+  (load-library "column-marker")
+  )
+
+(require 'quickopen)
+(require 'nyan-mode)
+(scroll-bar-mode nil)
