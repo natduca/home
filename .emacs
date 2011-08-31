@@ -18,6 +18,14 @@
 (defun is-webkit ()
   (string-match "third_party/WebKit/" (buffer-file-name)))
 
+(defun check-webkit-style()
+  (interactive "")
+  (let ((old_cd default-directory))
+    (cd (concat (get_g1_dir) "third_party/WebKit"))
+    (compile "check-webkit-style")
+    (message old_cd)
+    (cd old_cd)))
+
 ;; Util functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun strrchr(x y)
@@ -86,11 +94,14 @@
 (add-hook 'c++-mode-common-hook 'my-c-common-hook)
 (add-hook 'c-mode-common-hook 'my-c-common-hook)
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.gyp\\'" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.gypi\\'" . python-mode))
 
 ; html
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-html-mode-hook ()
+  (all-mode-hook)
   (local-set-key "\C-c\C-v" 'save-and-compile)
   )
 (add-hook 'html-mode-hook 'my-html-mode-hook)
@@ -99,6 +110,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-lisp-mode-hook ()
+  (all-mode-hook)
   (local-set-key "\C-c\C-d" 'eval-defun)
   (local-set-key "\C-c\C-r" 'eval-region)
   )
@@ -118,10 +130,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-css-mode-hook ()
+  (all-mode-hook)
   (local-set-key "\C-c\C-v" 'save-and-compile)
   (setq 'css-indent-offset 2)
   )
 (add-hook 'css-mode-hook 'my-css-mode-hook)
+
+; fundamental
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my-fundamental-mode-hook ()
+  (all-mode-hook)
+  )
+(add-hook 'fundamental-mode-hook 'my-fundamental-mode-hook)
 
 
 ; changelogs
@@ -337,11 +358,13 @@
     ))
 
 (defun save-and-compile()
- (interactive "")
- (save-buffer 0)
- (cd (get_g1_make_dir))
- (compile "/bin/bash -l -c \"do_g1_make\"")
- )
+  (interactive "")
+  (save-buffer 0)
+  (with-temp-buffer
+    (let ((old_cd default-directory))
+      (setq default-directory (get_g1_make_dir))
+      (compile "/bin/bash -l -c \"do_g1_make\"")
+    )))
 
 
 (global-set-key "\C-c\C-b" 'previous-error-and-center)
