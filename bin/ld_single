@@ -1,0 +1,11 @@
+#!/bin/sh
+lockfile=/tmp/ld_single.lock
+
+while !(shlock -f "${lockfile}" -p $$) do
+  echo Waiting: $@
+  sleep 1;
+done
+
+exec ld "$@"
+
+rm "${lockfile}"
