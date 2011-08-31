@@ -28,3 +28,6 @@ alias mt='mvim --remote-tab'
 alias python32='VERSIONER_PYTHON_PREFER_32_BIT=true python'
 source ~/home/bin/git-completion.bash
 fi
+
+
+alias new-run-webkit-tests-gdb='new-run-webkit-tests --no-retry-failures --noshow-results --time-out-ms 99999999 --startup-dialog'
