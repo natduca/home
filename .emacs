@@ -16,7 +16,8 @@
 ;; Projects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun is-webkit ()
-  (string-match "third_party/WebKit/" (buffer-file-name)))
+  (when (buffer-file-name)
+    (string-match "third_party/WebKit/" (buffer-file-name))))
 
 (defun check-webkit-style()
   (interactive "")
