@@ -1,19 +1,22 @@
 #!/bin/sh
 
-if test `pwd` != `cat ~/.markutils/m1`; then
-  if test -e ./Makefile; then
-      if test -n `which is_subdir`; then
-        tmp=`cat ~/.markutils/m1`
-        if ! `is_subdir . $tmp`; then
+if ! ~/home/bin/is_samefile `cat ~/.markutils/m1` `pwd`; then
+  if test `pwd` != `cat ~/.markutils/m1`; then
+    if test -e ./Makefile; then
+        if test -n `which is_subdir`; then
+          tmp=`cat ~/.markutils/m1`
+          if ! `is_subdir . $tmp`; then
+            make
+            exit
+          fi
+        else
           make
           exit
         fi
-      else
-        make
-        exit
-      fi
+    fi
   fi
 fi
+
 if test ! -e ~/.markutils/g1_make_cpucount; then echo 1 > ~/.markutils/g1_make_cpucount; fi
 CPU_COUNT=`cat ~/.markutils/g1_make_cpucount`
 
@@ -31,9 +34,10 @@ BUILD_DIR=`cat ~/.markutils/m1`
 if test `uname` = Darwin; then
   # Darwin
   if test -e Makefile; then
-    echo Running make -j$CPU_COUNT $MAKE_ARGS
-    make -j15 -C $BUILD_DIR $MAKE_ARGS
+    echo Running make -j$CPU_COUNT $MAKE_PROJECT $MAKE_ARGS
+    make -j$CPU_COUNT -C $BUILD_DIR $MAKE_PROJECT $MAKE_ARGS
   else
+    echo plonk
     pushd $BUILD_DIR
     if which goma-xcodebuild > /dev/null; then
       echo Running goma-xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS

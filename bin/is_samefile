@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import sys
+import os
+
+if len(sys.argv) != 3:
+	sys.stderr.write("Usage: is_sasmefile <dir> <parentDir>\n")
+	exit(-1)
+
+if os.path.samefile(sys.argv[1],sys.argv[2]):
+  exit(0)
+exit(-1)
