@@ -8,12 +8,13 @@ python
 import gdb
 import re
 import subprocess
-class PickPID(gdb.Function):
-  def __init__(self):
-    gdb.Function.__init__(self, "pickpid")
+class PickPIDBase(gdb.Function):
+  def __init__(self, cmdname, pick_fn):
+    gdb.Function.__init__(self, cmdname)
+    self.pick_fn = pick_fn
 
-  def pick(self, name):
-    proc = subprocess.Popen(["ps", "ax"], stdout=subprocess.PIPE)
+  def pick(self):
+    proc = subprocess.Popen(["ps", "ax", "-ww", "-o", "pid,cmd=ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ,args"], stdout=subprocess.PIPE)
     out = proc.communicate()[0]
     cand = []
     for l in out.split("\n"):
@@ -21,11 +22,15 @@ class PickPID(gdb.Function):
       if l == '':
         continue
       rec = re.split("\s+", l)
-      if rec[4].find(name) != -1:
-        if len(rec) > 5:
-          cand.append((rec[0],rec[4]," ".join(rec[5:])))
-        else:
-          cand.append((rec[0],rec[4],""))
+      if rec[2].startswith('-'):
+        args = rec[4:]
+      else:
+#        print rec
+        args = rec[3:]
+#        print ">>>", (rec[0],rec[1],args), " from ", rec
+      if self.pick_fn(rec[1],args):
+        cand.append((rec[0],rec[1],args))
+
     if len(cand) == 0:
       print "No process found"
       return 0
@@ -51,19 +56,69 @@ class PickPID(gdb.Function):
     else:
       return int(cand[0][0])
 
-  def invoke(self, name):
-    pid = self.pick(name.string())
+  def invoke(self):
+    pid = self.pick()
     if pid != 0:
       f = open("/tmp/picked", "w")
       sys.stdout.write("Attaching to %s\n" % pid)
       f.write('attach %s\n' % pid)
       f.close()
     return pid != 0
-PickPID()
+
+def is_drt(name,args):
+   return name.find("DumpRenderTree") != -1
+PickPIDBase("pickdrt", is_drt)
+
+def is_chrome(type, name, args):
+   if name.find("chrome") == -1:
+     return False
+   # Ignore the goobuntu chrome
+   if name.find("/opt/google/") != -1:
+     return False
+   if name.find("/usr/bin/") != -1:
+     return False
+   if name == '[chrome]':
+     return False
+   if type == "browser":
+     print args
+     return len([a for a in args if not a.startswith("--type")]) == 0
+   else:
+     for a in args:
+       if a == ("--type=%s" % type):
+         return True
+   return False
+
+PickPIDBase("pickchromerenderer", lambda x, y: is_chrome("renderer", x, y))
+PickPIDBase("pickchromegpu", lambda x, y: is_chrome("gpu-process", x, y))
+PickPIDBase("pickchromebrowser", lambda x, y: is_chrome("browser", x, y))
+
 end
 
+# attach to a DumpRenderTree
 def adrt
-  if $pickpid("DumpRenderTree")
+  if $pickdrt()
+    source /tmp/picked
+  end
+end
+
+# attach to a chrome renderer
+def acrr
+  if $pickchromerenderer()
+    source /tmp/picked
+  end
+end
+
+# attach to a chrome gpu-process
+def acrg
+  if $pickchromegpu()
+    source /tmp/picked
+  end
+end
+
+
+# attach to a chrome browser
+def acrb
+  if $pickchromebrowser()
     source /tmp/picked
   end
 end

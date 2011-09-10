@@ -100,12 +100,19 @@
 
 ; html
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defun my-html-mode-hook ()
   (all-mode-hook)
   (local-set-key "\C-c\C-v" 'save-and-compile)
   )
 (add-hook 'html-mode-hook 'my-html-mode-hook)
+
+; term
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-term-mode-hook ()
+  (when (fboundp 'show-ws-highlight-trailing-whitespace)
+    (toggle-show-trailing-whitespace-show-ws))
+  )
+(add-hook 'term-mode-hook 'my-term-mode-hook)
 
 ; lisp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -375,7 +382,9 @@
 
 ; Keybindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key [f4] 'kill-this-buffer)
+(global-set-key [f4] (lambda ()
+                       (interactive "")
+                       (kill-buffer (current-buffer))))
 (global-set-key [delete] 'delete-char)
 (global-set-key [kp-delete] 'delete-char)
 (global-set-key [f9] 'shrink-window-horizontally)
