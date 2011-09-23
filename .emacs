@@ -29,6 +29,11 @@
 
 ;; Util functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun has-gui ()
+  (when (fboundp 'window-system)
+    (when window-system
+      1)))
+
 (defun strrchr(x y)
   (with-temp-buffer
     (insert x)
@@ -71,6 +76,7 @@
 
 (when (fboundp 'toggle-show-trailing-whitespace-show-ws)
   (toggle-show-trailing-whitespace-show-ws))
+
 (defun all-mode-hook()
   (setq truncate-lines 1)
   (setq indent-tabs-mode nil)
@@ -411,12 +417,11 @@
 ; Look n feel
 (set-frame-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
 
-(if (fboundp 'window-system)
-    (progn
-      (set-background-color "black")
-      (set-foreground-color "white")
-      (set-cursor-color "white")
-      ))
+(when (has-gui)
+  (set-background-color "black")
+  (set-foreground-color "white")
+  (set-cursor-color "white")
+  )
 
 (setq default-frame-alist
       (append default-frame-alist
@@ -439,11 +444,10 @@
 
 (mouse-avoidance-mode 'exile) ;mouse
 
-(if (fboundp 'window-system)
-    (progn
-      (global-hl-line-mode 1) ; show current line
-      (set-face-background 'hl-line "#0F0F0F")
-      ))
+(when (has-gui)
+  (global-hl-line-mode 1) ; show current line
+  (set-face-background 'hl-line "#0F0F0F")
+)
 
 (when (fboundp 'global-linum-mode)
   (global-linum-mode 1)  ;line numbers
