@@ -8,19 +8,19 @@ fi
 
 git remote prune origin
 
-if test `git branch | grep ^* | cut -c 3-` = trunk; then
-  echo Chrome: reset --hard trunk to origin/trunk
-  if ! git reset --hard origin/trunk; then
+if test `git branch | grep ^* | cut -c 3-` = master; then
+  echo Chrome: reset --hard master to origin/master
+  if ! git reset --hard origin/master; then
       exit
   fi
 else
-  echo Chrome: reset trunk to origin/trunk
-  if ! git branch -f trunk origin/trunk; then
+  echo Chrome: reset master to origin/master
+  if ! git branch -f master origin/master; then
     exit
   fi
-  echo Chrome: checkout trunk
-  if ! git checkout trunk; then
-    echo Failed to checkout trunk.
+  echo Chrome: checkout master
+  if ! git checkout master; then
+    echo Failed to checkout master
     exit
   fi
 
