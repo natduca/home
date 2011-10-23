@@ -68,8 +68,10 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(fill-column 80)
  '(compilation-skip-threshold 1)
+ '(elisp-cache-byte-compile-files t)
+ '(fill-column 80)
+ '(ido-enable-flex-matching t)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t))
 (setq-default indent-tabs-mode nil)
@@ -288,18 +290,8 @@
   (bury-buffer (current-buffer))
   (switch-to-buffer (other-buffer (current-buffer) 1)) 1))
 
-(global-set-key (kbd "C-M-o")
-                (lambda ()
-                  (interactive "")
-                  (view-buffer-other-window "*compilation*")
-                  ))
-
-(global-set-key (kbd "<C-s-268632079>")
-                (lambda ()
-                  (interactive "")
-                  (view-buffer-other-window "*compilation*")
-                  ))
-
+; reverting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun revert-all-buffers ()
   (interactive "")
    (mapcar (lambda (b)
@@ -332,6 +324,51 @@
 
 ;; Compilation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun compilation-window-layout-active()
+  (if (frame-parameter nil 'window-layout-before-compilation-mode)
+      t
+    nil))
+
+(defvar compilation-window-layout-window-height 15)
+
+(defun toggle-compilation-window-layout ()
+  (if (frame-parameter nil 'window-layout-before-compilation-mode)
+      (progn
+        (set-window-configuration (frame-parameter nil 'window-layout-before-compilation-mode))
+        (set-frame-parameter nil 'window-layout-before-compilation-mode nil)
+        )
+    (progn
+      (set-frame-parameter nil 'window-layout-before-compilation-mode (current-window-configuration))
+      (delete-other-windows)
+      (let ((compilation-window (selected-window)))
+        (let ((content-window (split-window compilation-window compilation-window-layout-window-height)))
+          (select-window compilation-window)
+          (switch-to-buffer "*compilation*" t)
+          (select-window content-window)
+          )
+        )
+      )
+    )
+  )
+
+(global-set-key (kbd "C-M-o")
+                (lambda ()
+                  (interactive "")
+                  (toggle-compilation-window-layout)
+                  ))
+
+(global-set-key (kbd "A-M-o")
+                (lambda ()
+                  (interactive "")
+                  (toggle-compilation-window-layout)
+                  ))
+
+(global-set-key (kbd "<C-s-268632079>")
+                (lambda ()
+                  (interactive "")
+                  (toggle-compilation-window-layout)
+                  ))
+
 (defun read-file-contents (f)
   (with-temp-buffer
     (insert-file-contents f)
@@ -377,7 +414,13 @@
   (with-temp-buffer
     (let ((old_cd default-directory))
       (setq default-directory (get_g1_make_dir))
+      (when (not (compilation-window-layout-active))
+        (toggle-compilation-window-layout)
+        )
       (compile "/bin/bash -l -c \"do_g1_make\"")
+      (with-current-buffer "*compilation*"
+        (set-variable 'truncate-lines 1)
+        )
     )))
 
 
@@ -478,3 +521,9 @@
 (require 'quickopen)
 (require 'nyan-mode)
 (scroll-bar-mode nil)
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
