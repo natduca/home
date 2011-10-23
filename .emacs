@@ -325,23 +325,23 @@
 ;; Compilation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun compilation-window-layout-active()
-  (if (frame-parameter nil 'window-layout-before-compilation-mode)
+  (if (frame-parameter nil 'compilation-layout-active)
       t
     nil))
 
 (defvar compilation-window-layout-window-height 15)
 
 (defun toggle-compilation-window-layout ()
-  (if (frame-parameter nil 'window-layout-before-compilation-mode)
+  (if (frame-parameter nil 'compilation-layout-active)
       (progn
-        (set-window-configuration (frame-parameter nil 'window-layout-before-compilation-mode))
-        (set-frame-parameter nil 'window-layout-before-compilation-mode nil)
+        (delete-window (frame-parameter nil 'compilation-layout-active))
+        (set-frame-parameter nil 'compilation-layout-active nil)
         )
     (progn
-      (set-frame-parameter nil 'window-layout-before-compilation-mode (current-window-configuration))
       (delete-other-windows)
       (let ((compilation-window (selected-window)))
         (let ((content-window (split-window compilation-window compilation-window-layout-window-height)))
+          (set-frame-parameter nil 'compilation-layout-active compilation-window)
           (select-window compilation-window)
           (switch-to-buffer "*compilation*" t)
           (select-window content-window)
