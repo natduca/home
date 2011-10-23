@@ -30,4 +30,4 @@ source ~/home/bin/git-completion.bash
 fi
 
 
-alias gdb-new-run-webkit-tests='new-run-webkit-tests --no-retry-failures --noshow-results --time-out-ms=99999999 --startup-dialog'
+alias gdb-new-run-webkit-tests='new-run-webkit-tests --child-processes=1 --no-retry-failures --noshow-results --time-out-ms=99999999 --startup-dialog'
