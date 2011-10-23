@@ -62,20 +62,6 @@ echo WebKit: checkout gclient
 git checkout gclient
 popd
 
-# angle
-if test -e ./third_party/angle/.git; then
-  echo angle is git
-  pushd ./third_party/angle
-
-  if ! git checkout master; then
-    echo Could not checkout master
-    exit
-  fi
-  git svn rebase
-
-  popd
-fi
-
 echo gclient sync
 if test "x$OSTYPE" != "xcygwin"; then
 gclient sync -j16
