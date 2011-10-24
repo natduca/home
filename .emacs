@@ -128,7 +128,12 @@
 (defun my-lisp-mode-hook ()
   (all-mode-hook)
   (local-set-key "\C-c\C-d" 'eval-defun)
-  (local-set-key "\C-c\C-r" 'eval-region)
+  (local-set-key "\C-c\C-r" (lambda ()
+                              (interactive "")
+                              (eval-region (region-beginning) (region-end))
+                              (message "Region evaluated")
+                              )
+                 )
   )
 (add-hook 'lisp-mode-hook 'my-lisp-mode-hook)
 (add-hook 'emacs-lisp-mode-hook 'my-lisp-mode-hook)
@@ -324,33 +329,6 @@
 
 ;; Compilation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun compilation-window-layout-active()
-  (if (frame-parameter nil 'compilation-layout-active)
-      t
-    nil))
-
-(defvar compilation-window-layout-window-height 15)
-
-(defun toggle-compilation-window-layout ()
-  (if (frame-parameter nil 'compilation-layout-active)
-      (progn
-        (delete-window (frame-parameter nil 'compilation-layout-active))
-        (set-frame-parameter nil 'compilation-layout-active nil)
-        )
-    (progn
-      (delete-other-windows)
-      (let ((compilation-window (selected-window)))
-        (let ((content-window (split-window compilation-window compilation-window-layout-window-height)))
-          (set-frame-parameter nil 'compilation-layout-active compilation-window)
-          (select-window compilation-window)
-          (switch-to-buffer "*compilation*" t)
-          (select-window content-window)
-          )
-        )
-      )
-    )
-  )
-
 (global-set-key (kbd "C-M-o")
                 (lambda ()
                   (interactive "")
@@ -407,21 +385,85 @@
     (message (format "Old cd %s" old_cd))
     (next-error)
     ))
+(defun get-visible-compilation-window()
+  (let ((frame-with-compilation
+         (find-if (lambda (f)
+                    (and
+                     (frame-visible-p f)
+                     (compilation-window-layout-active f)
+                     )
+                    ) (frame-list))))
+    (if frame-with-compilation
+        (frame-parameter frame-with-compilation 'compilation-layout-active)
+      nil)
+    )
+  )
+
+(defun compilation-window-layout-active(&optional frame)
+  (if (frame-parameter frame 'compilation-layout-active)
+      (window-live-p (frame-parameter frame 'compilation-layout-active))
+    nil))
+
+(defvar compilation-window-layout-window-height 15)
+
+(defun toggle-compilation-window-layout ()
+  (if (compilation-window-layout-active)
+      (progn
+        (delete-window (frame-parameter nil 'compilation-layout-active))
+        (set-frame-parameter nil 'compilation-layout-active nil)
+        )
+    (progn
+      (delete-other-windows)
+      (let ((compilation-window (selected-window)))
+        (let ((content-window (split-window compilation-window compilation-window-layout-window-height)))
+          (set-frame-parameter nil 'compilation-layout-active compilation-window)
+          (select-window compilation-window)
+          (switch-to-buffer "*compilation*" t)
+          (select-window content-window)
+          ;; note: hook split-window-preferred-function in order to prevent
+          ;; it from splitting compilation-window.
+          (set-window-dedicated-p compilation-window t)
+          )
+        )
+      )
+    )
+  )
+
+(defun my-split-window-function (w)
+  (message "split")
+  (if (string= (buffer-name (window-buffer w)) "*compilation*")
+      nil
+    (split-window-sensibly w)))
+(setq split-window-preferred-function 'my-split-window-function)
+(setq pop-up-frames nil)
+(setq display-buffer-reuse-frames nil)
 
 (defun save-and-compile()
   (interactive "")
   (save-buffer 0)
-  (with-temp-buffer
-    (let ((old_cd default-directory))
-      (setq default-directory (get_g1_make_dir))
-      (when (not (compilation-window-layout-active))
-        (toggle-compilation-window-layout)
+  (if (get-visible-compilation-window)
+      (with-selected-frame (window-frame (get-visible-compilation-window))
+        (with-temp-buffer
+          (setq default-directory (get_g1_make_dir))
+          (compile "/bin/bash -l -c \"do_g1_make\"")
+          (with-current-buffer "*compilation*"
+            (set-variable 'truncate-lines 1)
+            )
+          )
         )
-      (compile "/bin/bash -l -c \"do_g1_make\"")
-      (with-current-buffer "*compilation*"
-        (set-variable 'truncate-lines 1)
+    (progn
+      (toggle-compilation-window-layout)
+      (with-temp-buffer
+        (setq default-directory (get_g1_make_dir))
+        (compile "/bin/bash -l -c \"do_g1_make\"")
+        (with-current-buffer "*compilation*"
+          (set-variable 'truncate-lines 1)
+          )
         )
-    )))
+      )
+    )
+  )
+
 
 
 (global-set-key "\C-c\C-b" 'previous-error-and-center)
