@@ -40,7 +40,7 @@ fi
 
 if test `git branch | grep ^* | cut -c 3-` = master; then
   echo WebKit: reset --hard master to origin/master
-  if ! git reset --hard origin/trunk; then
+  if ! git reset --hard origin/master; then
     exit
   fi
 else
