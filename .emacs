@@ -440,7 +440,13 @@
 
 (defun save-and-compile()
   (interactive "")
-  (save-buffer 0)
+  (mapcar (lambda (b)
+            (with-current-buffer b
+              (when (buffer-file-name)
+                (message (format " %s" (buffer-file-name)))
+                (save-buffer 0)
+                )))
+          (buffer-list))
   (if (get-visible-compilation-window)
       (with-selected-frame (window-frame (get-visible-compilation-window))
         (with-temp-buffer
