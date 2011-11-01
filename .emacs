@@ -428,13 +428,22 @@
       (window-live-p (frame-parameter frame 'compilation-layout-active))
     nil))
 
+(defun compilation-window-selected(&optional frame)
+  (eq (selected-window) (frame-parameter frame 'compilation-layout-active)))
+
 (defvar compilation-window-layout-window-height 15)
 
 (defun toggle-compilation-window-layout ()
   (if (compilation-window-layout-active)
-      (progn
-        (delete-window (frame-parameter nil 'compilation-layout-active))
-        (set-frame-parameter nil 'compilation-layout-active nil)
+      (if (compilation-window-selected)
+          (progn
+            (delete-window (frame-parameter nil 'compilation-layout-active))
+            (set-frame-parameter nil 'compilation-layout-active nil)
+            )
+        (progn
+          (select-window (frame-parameter nil 'compilation-layout-active))
+          (goto-char (point-max))
+          )
         )
     (progn
       (delete-other-windows)
@@ -462,6 +471,16 @@
 (setq pop-up-frames nil)
 (setq display-buffer-reuse-frames nil)
 
+(defun move-point-to-end-for-buffer (b)
+  (mapcar (lambda (w)
+            (with-selected-window w
+              (goto-char (point-max))
+              )
+            )
+          (get-buffer-window-list b)
+          )
+  )
+
 (defun save-and-compile()
   (interactive "")
   (mapcar (lambda (b)
@@ -479,6 +498,7 @@
           (with-current-buffer "*compilation*"
             (set-variable 'truncate-lines 1)
             )
+          (move-point-to-end-for-buffer "*compilation*")
           )
         )
     (progn
@@ -489,6 +509,7 @@
         (with-current-buffer "*compilation*"
           (set-variable 'truncate-lines 1)
           )
+        (move-point-to-end-for-buffer "*compilation*")
         )
       )
     )
