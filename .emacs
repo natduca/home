@@ -118,7 +118,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-term-mode-hook ()
   (when (fboundp 'show-ws-highlight-trailing-whitespace)
-    (toggle-show-trailing-whitespace-show-ws))
+    (when show-ws-highlight-trailing-whitespace-p
+      (toggle-show-trailing-whitespace-show-ws)))
+  (when (fboundp 'global-linum-mode)
+    (global-linum-mode 0)  ;disable line numbers)
+  (set-face-background 'linum "#0F0F0F")
   )
 (add-hook 'term-mode-hook 'my-term-mode-hook)
 
