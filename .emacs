@@ -61,6 +61,21 @@
         (setq list (cdr list)))
       result)))
 
+(unless (fboundp 'filter)
+  (defun filter(predicate list)
+    "Return items in LIST satisfying."
+    (delq nil
+          (mapcar (lambda (x)
+                    (and (funcall predicate x)
+                         x
+                         )
+                    )
+                  list
+                  )
+          )
+    )
+  )
+
 ; all modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
@@ -74,7 +89,9 @@
  '(ido-enable-flex-matching t)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t))
+
 (setq-default indent-tabs-mode nil)
+(setq comment-empty-lines t)
 
 (when (fboundp 'toggle-show-trailing-whitespace-show-ws)
   (toggle-show-trailing-whitespace-show-ws))
