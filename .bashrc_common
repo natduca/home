@@ -29,5 +29,8 @@ alias python32='VERSIONER_PYTHON_PREFER_32_BIT=true python'
 source ~/home/bin/git-completion.bash
 fi
 
-
 alias gdb-new-run-webkit-tests='new-run-webkit-tests --child-processes=1 --no-retry-failures --noshow-results --time-out-ms=99999999 --startup-dialog'
+
+
+alias nrwkt-dg='new-run-webkit-tests --debug --platform=chromium-gpu --no-show-results'
+alias gdb-nrwkt-dg='gdb-new-run-webkit-tests --debug --platform chromium-gpu --no-show-results'
