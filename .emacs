@@ -143,8 +143,8 @@
     )
   (when (fboundp 'global-linum-mode)
     (linum-mode 0) ; disable line numbers
+    (set-face-background 'linum "#0F0F0F")
     )
-  (set-face-background 'linum "#0F0F0F")
   )
 (add-hook 'term-mode-hook 'my-term-mode-hook)
 
