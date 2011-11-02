@@ -101,7 +101,9 @@
   (setq indent-tabs-mode nil)
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
-  (nyan-mode 1)
+  (when (fboundp 'nyan-mode)
+    (nyan-mode 1)
+    )
   (when (and
          (fboundp 'column-marker-1)
          (not (is-webkit)))
@@ -612,8 +614,11 @@
   )
 
 (require 'quickopen)
-(require 'nyan-mode)
-(scroll-bar-mode nil)
+(when (fboundp 'scroll-bar-mode)
+  (require 'nyan-mode)
+  (scroll-bar-mode nil)
+  )
+
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
