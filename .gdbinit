@@ -80,8 +80,8 @@ def is_chrome(type, name, args):
    if name == '[chrome]':
      return False
    if type == "browser":
-     print args
-     return len([a for a in args if not a.startswith("--type")]) == 0
+     not_type = len([a for a in args if a.startswith("--type")]) == 0
+     return not_type
    else:
      for a in args:
        if a == ("--type=%s" % type):
