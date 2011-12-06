@@ -8,3 +8,5 @@
 [add]
   ignoreErrors = true
 	ignore-errors = true
+[core]
+  excludesfile = ~/.gitignore
