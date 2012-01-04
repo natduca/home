@@ -10,3 +10,5 @@
 	ignore-errors = true
 [core]
   excludesfile = ~/.gitignore
+[branch]
+  autosetuprebase = always
