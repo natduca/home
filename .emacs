@@ -130,6 +130,7 @@
 (defun my-html-mode-hook ()
   (all-mode-hook)
   (local-set-key "\C-c\C-v" 'save-and-compile)
+  (local-unset-key "\C-c\C-f")
   )
 (add-hook 'html-mode-hook 'my-html-mode-hook)
 
@@ -208,6 +209,7 @@
   (setq js2-escape-quotes nil)
   (setq js2-bounce-indent-flag nil)
   (setq js2-basic-offset 2)
+  (local-unset-key "\C-c\C-f")
   )
 (add-hook 'js2-mode-hook 'my-js2-mode-hook)
 
@@ -496,7 +498,7 @@
       (with-selected-frame (window-frame (get-visible-compilation-window))
         (with-temp-buffer
           (setq default-directory (get_g1_make_dir))
-          (compile "/bin/bash -l -c \"do_g1_make\"")
+          (compile "/home/nduca/home/bin/do_g1_make")
           (with-current-buffer "*compilation*"
             (set-variable 'truncate-lines 1)
             )
@@ -507,7 +509,7 @@
       (toggle-compilation-window-layout)
       (with-temp-buffer
         (setq default-directory (get_g1_make_dir))
-        (compile "/bin/bash -l -c \"do_g1_make\"")
+        (compile "/home/nduca/home/bin/do_g1_make")
         (with-current-buffer "*compilation*"
           (set-variable 'truncate-lines 1)
           )
@@ -521,6 +523,7 @@
 
 (global-set-key "\C-c\C-b" 'previous-error-and-center)
 (global-set-key "\C-c\C-f" 'next-error-and-center)
+(global-set-key "\C-c\C-r" 'recompile)
 (global-set-key "\C-c\C-v" 'save-and-compile)
 
 
