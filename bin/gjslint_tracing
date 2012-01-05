@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+gjslint --strict --check_html --unix_mode
