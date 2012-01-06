@@ -7,11 +7,11 @@ alias purge='purge_pyc; purge_tmps'
 alias xterm='xterm -bg black -fg white -sb -sl 5000'
 
 if test "x$TERM" == "xdumb"; then
-export PS1='\033[32m\]\h:\w\[\033[33m\033[0m\] \$ '
+export PS1='\[\e[1;32m\]\h:\w\[\e[0m\] \$ '
 elif test "x$MSYSTEM" == "xMINGW32"; then
 export PS1='\h:\w \$ '
 elif test "x$OSTYPE" != "xcygwin"; then
-export PS1='\[\033]\007\033[32m\]\h:\w\[\033[33m\033[0m\] \$ '
+export PS1='\[\e[1;32m\]\h:\w\[\e[0m\] \$ '
 fi
 
 export PATH=$PATH:$H/bin
