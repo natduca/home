@@ -7,11 +7,19 @@ alias purge='purge_pyc; purge_tmps'
 alias xterm='xterm -bg black -fg white -sb -sl 5000'
 
 if test "x$TERM" == "xdumb"; then
+if test "x$SSH_CLIENT" != "x"; then
+export PS1='\[\e[0;33m\]\h:\w\[\e[0m\] \$ '
+else
 export PS1='\[\e[0;32m\]\h:\w\[\e[0m\] \$ '
+fi
 elif test "x$MSYSTEM" == "xMINGW32"; then
 export PS1='\h:\w \$ '
 elif test "x$OSTYPE" != "xcygwin"; then
+if test "x$SSH_CLIENT" != "x"; then
+export PS1='\[\e[0;33m\]\h:\w\[\e[0m\] \$ '
+else
 export PS1='\[\e[0;32m\]\h:\w\[\e[0m\] \$ '
+fi
 fi
 
 export PATH=$PATH:$H/bin
