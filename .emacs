@@ -365,8 +365,8 @@
 (defun get_g1_make_dir()
   (let ((md (get_g1_dir))
         (mt (get_g1_make_type)))
-    (if (file-exists-p (concat md "out/" mt "/build.ninja"))
-        (concat md "out/" mt "/")
+    (if (file-exists-p (concat md mt "/build.ninja"))
+        (concat md mt "/")
       md)))
 
 (defun previous-error-and-center()

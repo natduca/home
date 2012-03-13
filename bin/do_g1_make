@@ -59,9 +59,9 @@ else
   echo $BUILD_DIR/build.ninja
   if test -e $BUILD_DIR/build.ninja; then
     BUILD=ninja
-  elif test -e $BUILD_DIR/out/$MAKE_TYPE/build.ninja; then
+  elif test -e $BUILD_DIR/$MAKE_TYPE/build.ninja; then
     BUILD=ninja
-    BUILD_DIR=$BUILD_DIR/out/$MAKE_TYPE/
+    BUILD_DIR=$BUILD_DIR/$MAKE_TYPE/
   else
     BUILD=make BUILDTYPE=$MAKE_TYPE
   fi
