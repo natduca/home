@@ -493,6 +493,21 @@
 (global-set-key "\C-c\C-r" 'recompile)
 (global-set-key "\C-c\C-v" 'save-and-compile)
 
+;; Renames
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun rename (new-file-name)
+  """Renames the current buffer's file."""
+  (interactive "FNew file name: ")
+  (unless (buffer-file-name (current-buffer))
+    (error "Can not rename buffers that have no underlying file.")
+    )
+  (save-buffer)
+  (rename-file (buffer-file-name (current-buffer))
+               new-file-name)
+  (kill-buffer)
+  (find-file new-file-name)
+  )
+
 ; Keybindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key [f4] (lambda ()
