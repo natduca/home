@@ -44,7 +44,7 @@ fi
 alias gdb-new-run-webkit-tests='new-run-webkit-tests --child-processes=1 --no-retry-failures --noshow-results --time-out-ms=99999999 --startup-dialog'
 
 
-alias nrwkt-dbg='new-run-webkit-tests --debug --no-show-results'
-alias gdb-nrwkt-dbg='gdb-new-run-webkit-tests --debug --no-show-results'
+alias nrwkt-dbg='new-run-webkit-tests --debug --no-show-results --no-new-test-results --no-retry-failures'
+alias gdb-nrwkt-dbg='gdb-new-run-webkit-tests --debug --no-show-results --no-new-test-results --no-retry-failures'
 
 alias tev='trace-event-viewer'
