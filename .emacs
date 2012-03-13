@@ -15,6 +15,20 @@
 
 ;; Projects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Turn off VC git for chrome
+(when (locate-library "vc")
+  (defadvice vc-registered (around nochrome-vc-registered (file))
+    (message (format "nochrome-vc-registered %s" file))
+    (if (string-match ".*chrome/src.*" file)
+        (progn
+          (message (format "Skipping VC mode for %s" % file))
+          (setq ad-return-value nil)
+          )
+      ad-do-it)
+    )
+  (ad-activate 'vc-registered)
+  )
+
 (defun is-webkit ()
   (when (buffer-file-name)
     (string-match "third_party/WebKit/" (buffer-file-name))))
