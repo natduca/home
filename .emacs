@@ -317,6 +317,13 @@
 
 ;; Compilation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defadvice linum-on (after compilation-after-linum-on)
+  (when (string= "*compilation*" (buffer-name))
+    (linum-mode 0)
+    )
+  )
+(ad-activate 'linum-on)
+
 (global-set-key (kbd "C-M-o")
                 (lambda ()
                   (interactive "")
