@@ -56,7 +56,6 @@ elif uname | grep CYGWIN > /dev/null; then
 else
   # Non-darwin
   # ninja file present?
-  echo $BUILD_DIR/build.ninja
   if test -e $BUILD_DIR/build.ninja; then
     BUILD=ninja
   elif test -e $BUILD_DIR/$MAKE_TYPE/build.ninja; then
@@ -68,7 +67,7 @@ else
 
   for CUR_PROJECT in $MAKE_PROJECT
   do
-    echo Running $BUILD -j $CPU_COUNT $CUR_PROJECT $MAKE_ARGS
+    echo Running $BUILD -j $CPU_COUNT -C $BUILD_DIR $CUR_PROJECT $MAKE_ARGS
     if ! $BUILD -j $CPU_COUNT -C $BUILD_DIR $CUR_PROJECT $MAKE_ARGS; then
       exit 1
     fi
