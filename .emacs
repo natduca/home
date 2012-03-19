@@ -250,72 +250,18 @@
 
 ;; Other file, next-file, revert-all-buffers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun other-file(x)
-  (let* ((split (splitext x))
-         (basename (car split))
-         (basename_without_test_suffix
-          (if (/= (strrchr basename "_test") -1)
-              (substring basename 0 (strrchr basename "_test"))
-            nil))
-         (basename_has_test_suffix (not (not basename_without_test_suffix)))
-         (ext (downcase (cdr split))))
-    (defun goto(exts)
-      (let ((fileopts (mapcar
-                         (lambda (ex) (concat basename ex))
-                         exts)))
-        (find-if 'file-exists-p fileopts)
-        ))
-    (defun goto-fullname(fullname)
-      (message (format "checking %s" fullname))
-      (if (file-exists-p fullname)
-          fullname
-        nil))
-    (cond
-     ((member ext '(".c" ".cpp" ".cc"))
-      (goto '(".h")))
-     ((member ext '(".h"))
-      (goto '(".inl" ".cpp" ".cc" ".c")))
-     ((member ext '(".inl"))
-      (goto '(".cpp" ".cc" ".c")))
-     ((member ext '(".py"))
-      (message (format "processing with basename=%s" basename))
-      (if basename_has_test_suffix
-          (goto-fullname (concat basename_without_test_suffix ext))
-        (goto-fullname (concat basename "_test.py")))
-      )
-     )
-    )
-  )
-
-(defun find-other-file()
- (interactive "")
- (if (and (buffer-file-name)
-          (file-exists-p (buffer-file-name)))
-     (let ((target (other-file (buffer-file-name))))
-       (if target
-           (find-file target)
-         (message "No match found")))
-   (message "Not a file")))
-(defun find-other-file-other-window()
- (interactive "")
- (if (and (buffer-file-name)
-          (file-exists-p (buffer-file-name)))
-     (let ((target (other-file (buffer-file-name))))
-       (if target
-           (find-file-other-window target)
-         (message "No match found")))
-   (message "Not a file")))
-(defun find-other-file()
- (interactive "")
- (if (and (buffer-file-name)
-          (file-exists-p (buffer-file-name)))
-     (let ((target (other-file (buffer-file-name))))
-       (if target
-           (find-file target)
-         (message "No match found")))
-   (message "Not a file")))
-(global-set-key (kbd "M-o") 'find-other-file)
-(global-set-key (kbd "M-i") 'find-other-file-other-window)
+(global-set-key (kbd "M-o") (lambda ()
+                              (interactive "")
+                              (ff-find-other-file)
+                              ))
+(global-set-key (kbd "M-i") (lambda ()
+                              (interactive "")
+                              (ff-find-other-file t)
+                              ))
+(global-set-key (kbd "M-u") (lambda ()
+                              (interactive "")
+                              (ffap)
+                              ))
 
 (global-set-key (kbd "M-n")
  (lambda ()
@@ -525,7 +471,6 @@
 (global-set-key "\C-c\C-f" 'next-error-and-center)
 (global-set-key "\C-c\C-r" 'recompile)
 (global-set-key "\C-c\C-v" 'save-and-compile)
-
 
 ; Keybindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
