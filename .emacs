@@ -612,6 +612,10 @@
   (load-library "goog")
   )
 
+(when (locate-library "show-wspace")
+  (load-library "show-wspace")
+  )
+
 (when (locate-library "column-marker")
   (load-library "column-marker")
   )
