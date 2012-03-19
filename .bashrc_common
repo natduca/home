@@ -47,4 +47,4 @@ alias gdb-new-run-webkit-tests='new-run-webkit-tests --child-processes=1 --no-re
 alias nrwkt-dbg='new-run-webkit-tests --debug --no-show-results'
 alias gdb-nrwkt-dbg='gdb-new-run-webkit-tests --debug --no-show-results'
 
-alias tev='trace_event_viewer'
+alias tev='trace-event-viewer'
