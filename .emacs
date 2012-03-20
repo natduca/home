@@ -252,6 +252,8 @@
 (defun my-python-mode-hook()
   (all-mode-hook)
   (setq python-indent 2)
+  (local-unset-key (kbd "C-c C-f"))
+  (local-set-key (kbd "C-c C-r") 'recompile)
   )
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
@@ -326,6 +328,8 @@
     )
   )
 (ad-activate 'linum-on)
+
+(global-set-key (kbd "C-c C-r") 'recompile)
 
 (global-set-key (kbd "C-M-o")
                 (lambda ()
