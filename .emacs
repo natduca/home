@@ -21,7 +21,7 @@
     (message (format "nochrome-vc-registered %s" file))
     (if (string-match ".*chrome/src.*" file)
         (progn
-          (message (format "Skipping VC mode for %s" % file))
+          (message (format "Skipping VC mode for %s" file))
           (setq ad-return-value nil)
           )
       ad-do-it)
