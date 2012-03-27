@@ -1,3 +1,6 @@
+;; Make M-q behave sanely
+(setq sentence-end-double-space nil)
+
 ;; Search paths
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (when (and
