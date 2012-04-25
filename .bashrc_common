@@ -31,7 +31,7 @@ alias gc='git commit -m .'
 alias gca='git commit --amend'
 alias gcaa='EDITOR=true git commit -a --amend'
 alias gs='git status'
-alias gg='git grep'
+function gg() { git grep "$@" -- "*.cpp" "*.h" "*.cc" "*.c"; }
 
 alias chrome_clang_env='source ~/home/chrome_clang_env'
 
