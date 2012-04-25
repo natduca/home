@@ -118,7 +118,10 @@
   (setq indent-tabs-mode nil)
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
-  (when (fboundp 'nyan-mode)
+  (when (and
+         (fboundp 'nyan-mode)
+         (has-gui)
+         )
     (nyan-mode 1)
     )
   (when (and
