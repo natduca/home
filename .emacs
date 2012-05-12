@@ -255,6 +255,7 @@
 (defun my-python-mode-hook()
   (all-mode-hook)
   (setq python-indent 2)
+  (local-set-key "\C-c\C-v" 'save-and-compile)
   (local-unset-key (kbd "C-c C-f"))
   (local-set-key (kbd "C-c C-r") 'recompile)
   )
