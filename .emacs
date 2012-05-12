@@ -476,7 +476,7 @@
       (with-selected-frame (window-frame (get-visible-compilation-window))
         (with-temp-buffer
           (setq default-directory (get_g1_make_dir))
-          (compile "/home/nduca/home/bin/do_g1_make")
+          (compile (expand-file-name "~/home/bin/do_g1_make"))
           (with-current-buffer "*compilation*"
             (set-variable 'truncate-lines 1)
             )
@@ -487,7 +487,7 @@
       (toggle-compilation-window-layout)
       (with-temp-buffer
         (setq default-directory (get_g1_make_dir))
-        (compile "/home/nduca/home/bin/do_g1_make")
+        (compile (expand-file-name "~/home/bin/do_g1_make"))
         (with-current-buffer "*compilation*"
           (set-variable 'truncate-lines 1)
           )
