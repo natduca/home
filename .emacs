@@ -615,7 +615,7 @@
 (require 'quickopen)
 (when (fboundp 'scroll-bar-mode)
   (require 'nyan-mode)
-  (scroll-bar-mode nil)
+  (scroll-bar-mode 0)
   )
 
 (custom-set-faces
