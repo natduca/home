@@ -1,5 +1,15 @@
 ;; Make M-q behave sanely
 (setq sentence-end-double-space nil)
+(require 'compile)
+(setq compilation-error-regexp-alist  (delete 'watcom compilation-error-regexp-alist))
+;;(mapcar (lambda (x) (setq compilation-error-regexp-alist  (delete x compilation-error-regexp-alist)))
+ ;;       '(watcom
+  ;;        )
+   ;;i     )
+
+          ;; gnu
+          ;; gcc-include
+          ;; lcc
 
 ;; Search paths
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
