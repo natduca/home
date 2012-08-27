@@ -10,6 +10,13 @@ function parse_git_branch {
   git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }
 
+function is_android {
+  if [ -d "${ANDROID_NDK_ROOT}" ]; then
+    echo "(android) "
+  fi
+  echo ""
+}
+
 if test "x$TERM" == "xdumb"; then
 if test "x$SSH_CLIENT" != "x"; then
 export PS1='\[\e[0;33m\]\h:\w\[\e[0m\] \$ '
@@ -20,9 +27,9 @@ elif test "x$MSYSTEM" == "xMINGW32"; then
 export PS1='\h:\w \$ '
 elif test "x$OSTYPE" != "xcygwin"; then
 if test "x$SSH_CLIENT" != "x"; then
-export PS1='$(parse_git_branch) \[\e[0;33m\]\h:\w\[\e[0m\] \$ '
+export PS1='$(is_android)$(parse_git_branch) \[\e[0;33m\]\h:\w\[\e[0m\] \$ '
 else
-export PS1='$(parse_git_branch) \[\e[0;32m\]\h:\w\[\e[0m\] \$ '
+export PS1='$(is_android)$(parse_git_branch) \[\e[0;32m\]\h:\w\[\e[0m\] \$ '
 fi
 fi
 
