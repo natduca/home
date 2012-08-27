@@ -118,6 +118,7 @@
   (setq indent-tabs-mode nil)
   (local-set-key [(control r) (control v)] 'revert-buffer)
   (local-set-key [(control r) (control a)] 'mark-whole-buffer)
+  (column-number-mode 1)
   (when (and
          (fboundp 'nyan-mode)
          (has-gui)
