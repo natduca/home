@@ -26,6 +26,8 @@ export PATH=$PATH:$H/bin
 export PATH=$PATH:$H/quickopen
 export PATH=$PATH:$H/trace_event_viewer
 
+alias qo='quickopen'
+
 alias ga='git add .'
 alias gc='git commit -m .'
 alias gca='git commit --amend'
