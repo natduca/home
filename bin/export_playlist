@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+import codecs
+import optparse
+import os
+import sys
+import struct
+import shutil
+import urlparse
+import urllib
+import Foundation
+import ScriptingBridge
+
+def Dump(playlist, directory):
+  pass
+
+
+class ITunes(object):
+  def __init__(self):
+    self._itunes = ScriptingBridge.SBApplication.applicationWithBundleIdentifier_("com.apple.iTunes")
+    if not self._itunes.isRunning():
+      self._itunes.run()
+
+  @property
+  def playlists(self):
+    return self._itunes.sources()[0].playlists()
+
+def IsCopyNeeded(src_path, dest_path):
+  if not os.path.exists(dest_path):
+    return True
+  src_stat = os.stat(src_path)
+  dest_stat = os.stat(dest_path)
+  return src_stat.st_size != dest_stat.st_size
+
+def CopyIfNeeded(src_path, dest_path, name):
+  dirname = os.path.dirname(dest_path)
+  if not os.path.exists(dirname):
+    os.makedirs(dirname)
+  assert os.path.isdir(dirname)
+
+  if not IsCopyNeeded(src_path, dest_path):
+    sys.stderr.write("%s: already exists\n" % name)
+    return
+  sys.stderr.write("%s: copying..." % name)
+  sys.stderr.flush()
+  shutil.copy(src_path, dest_path)
+  sys.stderr.write("done\n")
+
+
+def main(args):
+  parser = optparse.OptionParser("%prog: dumps playlists to file")
+  parser.add_option('-o', "--output", default="/Volumes/NATMUSIC", help="*required*")
+  parser.add_option('-p', "--playlist", help="*required*")
+  options, args = parser.parse_args()
+
+  if not options.output or not options.playlist:
+    parser.print_help()
+    return 255
+
+  if not os.path.exists(options.output):
+    sys.stderr.write("%s does not exist" % options.output)
+    return 255
+  if not os.path.isdir(options.output):
+    sys.stderr.write("%s must be a directory." % options.output)
+    return 255
+
+  itunes = ITunes()
+  if options.playlist == 'list':
+    print "\n".join([p.name() for p in itunes.playlists])
+    return 0
+
+  playlists = [p for p in itunes.playlists if p.name() == options.playlist]
+  if len(playlists) == 0:
+    sys.stderr.write("Playlist %s does not exist" % options.playlist)
+    return 255
+  assert len(playlists) == 1
+  playlist = playlists[0]
+  # playlist.file_tracks:
+  # https://discussions.apple.com/thread/1230467?start=0&tstart=0
+  tracks = playlist.elementArrayWithCode_(struct.unpack('>L', 'cFlT')[0])
+
+  with codecs.open(os.path.join(options.output, '%s.m3u' % options.playlist),
+                   mode='w', encoding='utf-8') as m3u:
+    m3u.write("#EXTM3U\n")
+
+    for i in range(len(tracks)):
+      f = tracks[i]
+      duration = int(f.duration())
+      artist = f.artist()
+      title = f.name()
+
+      if 'Celine' in artist:
+        import pdb; pdb.set_trace()
+      src_url_parts = urlparse.urlparse(str(f.location()))
+      assert src_url_parts.scheme == 'file'
+      src_path = unicode(urllib.unquote(src_url_parts.path), 'utf-8')
+
+      # We need to figure out the bit of the directory structure to preserve...
+      # We will assume, for now, that this is "Music"
+      idx_of_music = src_path.rindex("/Music/")
+      assert idx_of_music != -1
+      path_to_preserve = src_path[idx_of_music + len("/Music/"):]
+
+      dest_path = os.path.join(options.output,
+                               path_to_preserve)
+      CopyIfNeeded(src_path, dest_path, "%i/%i: %s" % (i, len(tracks), path_to_preserve.encode('utf-8')))
+      m3u.write("#EXTINF:%i:%s - %s\n" % (duration, artist, title))
+      m3u.write(path_to_preserve + "\n")
+      m3u.flush()
+
+
+if __name__ == '__main__':
+  sys.exit(main(sys.argv[1:]))
