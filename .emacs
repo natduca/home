@@ -641,6 +641,6 @@
   (interactive)
   (let ((crc_dir (format "%s/%s" (get_g1_dir) "tools/chrome_remote_control")))
     (cd crc_dir)
-    (compile "~/depot_tools/pylint -f parseable chrome_remote_control")
+    (compile "~/depot_tools/pylint -f parseable chrome_remote_control -dR0923,R0201,E1101")
     )
   )
