@@ -635,3 +635,12 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  )
+
+
+(defun pylint-crc()
+  (interactive)
+  (let ((crc_dir (format "%s/%s" (get_g1_dir) "tools/chrome_remote_control")))
+    (cd crc_dir)
+    (compile "~/depot_tools/pylint -f parseable chrome_remote_control")
+    )
+  )
