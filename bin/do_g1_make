@@ -33,28 +33,11 @@ MAKE_PROJECT=`cat ~/.markutils/g1_make_project`
 
 BUILD_DIR=`cat ~/.markutils/m1`
 
-if test `uname` = Darwin; then
-  # Darwin
-  if test -e Makefile; then
-    echo Running make -j$CPU_COUNT BUILDTYPE=$MAKE_TYPE $MAKE_PROJECT $MAKE_ARGS
-    make -j$CPU_COUNT -C $BUILD_DIR BUILDTYPE=$MAKE_TYPE $MAKE_PROJECT $MAKE_ARGS
-  else
-    pushd $BUILD_DIR
-    if which goma-xcodebuild > /dev/null; then
-      echo Running goma-xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
-      goma-xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
-    else
-      echo Running xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
-      xcodebuild xcodebuild -project $MAKE_PROJECT/$MAKE_PROJECT.xcodeproj -configuration $MAKE_TYPE -target $MAKE_PROJECT $MAKE_ARGS
-    fi
-    popd
-  fi
-elif uname | grep CYGWIN > /dev/null; then
+if uname | grep CYGWIN > /dev/null; then
   P=`cygpath -ws /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE`
   P_=`cygpath $P`
   $P_/devenv.com /build $MAKE_TYPE `cygpath -w $BUILD_DIR/$MAKE_PROJECT/$MAKE_PROJECT.sln` /project `cygpath -w $BUILD_DIR/$MAKE_PROJECT/$MAKE_PROJECT.vcproj`
 else
-  # Non-darwin
   # ninja file present?
   if test -e $BUILD_DIR/build.ninja; then
     BUILD=ninja
