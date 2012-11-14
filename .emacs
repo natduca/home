@@ -11,6 +11,35 @@
           ;; gcc-include
           ;; lcc
 
+(defun nd-startswith (str substr)
+  (interactive "")
+  (if (>= (length str) (length substr))
+      (string-equal
+       (substring str 0 (length substr))
+       substr
+       )
+    nil)
+  )
+
+;; OSX environment "fun"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Care of http://emacswiki.org/emacs/EmacsApp
+(when (eq system-type 'darwin)
+  (let ((os-version
+         (shell-command-to-string "/usr/bin/sw_vers -productVersion")
+         ))
+    (when (nd-startswith os-version "10.8")
+      (setq quickopen-prefer-curses t)
+      )
+
+  (unless (getenv "TERM_PROGRAM")
+    (setenv "PATH"
+            (shell-command-to-string "source $HOME/.bashrc && printf $PATH")))
+  )
+  )
+
+
+
 ;; Search paths
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (when (and
@@ -110,6 +139,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(vc-follow-symlinks t)
  '(quickopen-curses-fullscreen nil)
  '(compilation-skip-threshold 1)
  '(elisp-cache-byte-compile-files t)
