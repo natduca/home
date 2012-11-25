@@ -10,10 +10,6 @@ import urllib
 import Foundation
 import ScriptingBridge
 
-def Dump(playlist, directory):
-  pass
-
-
 class ITunes(object):
   def __init__(self):
     self._itunes = ScriptingBridge.SBApplication.applicationWithBundleIdentifier_("com.apple.iTunes")
@@ -49,7 +45,7 @@ def CopyIfNeeded(src_path, dest_path, name):
 def main(args):
   parser = optparse.OptionParser("%prog: dumps playlists to file")
   parser.add_option('-o', "--output", default="/Volumes/NATMUSIC", help="*required*")
-  parser.add_option('-p', "--playlist", help="*required*")
+  parser.add_option('-p', "--playlist", help="*required*; list to list")
   options, args = parser.parse_args()
 
   if not options.output or not options.playlist:
