@@ -62,3 +62,8 @@ alias nrwkt-dbg='new-run-webkit-tests --debug --no-show-results --no-new-test-re
 alias gdb-nrwkt-dbg='gdb-new-run-webkit-tests --debug --no-show-results --no-new-test-results --no-retry-failures'
 
 alias tev='trace-event-viewer'
+
+
+export GYP_GENERATORS=ninja
+alias gyp_debug='./build/gyp_chromium -Dclang=1'
+alias gyp_release='./build/gyp_chromium -Dclang=1 -Gconfig=Release'
