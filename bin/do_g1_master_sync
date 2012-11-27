@@ -64,9 +64,9 @@ popd
 
 echo gclient sync
 if test "x$OSTYPE" != "xcygwin"; then
-gclient sync -j16 -n
+gclient sync -j16
 else
-gclient sync -n
+gclient sync
 fi
 
 MAKE_TYPE=`cat ~/.markutils/g1_make_type`

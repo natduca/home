@@ -64,10 +64,23 @@ alias gdb-nrwkt-dbg='gdb-new-run-webkit-tests --debug --no-show-results --no-new
 alias tev='trace-event-viewer'
 
 
+
+
 export GYP_GENERATORS=ninja
+
+if [ -e `cat ~/.markutils/m1`/third_party/llvm-build ]; then
+  export PATH=`cat ~/.markutils/m1`/third_party/llvm-build/Release+Asserts/bin:$PATH
+fi
+
+if test `uname` == Darwin; then
+alias gyp_debug='CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1'
+alias gyp_release='CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1 -Gconfig=Release'
+else
 alias gyp_debug='./build/gyp_chromium -Dclang=1'
 alias gyp_release='./build/gyp_chromium -Dclang=1 -Gconfig=Release'
+fi
+
 
 if [ -x ~/goma/goma_ctl.sh ]; then
-export PATH=~/goma:$PATH
+  export PATH=~/goma:$PATH
 fi
