@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -l
 pushd `cat ~/.markutils/m1`
 
 echo Chrome: fetch
@@ -64,11 +64,20 @@ popd
 
 echo gclient sync
 if test "x$OSTYPE" != "xcygwin"; then
-gclient sync -j16
+gclient sync -j16 -n
 else
-gclient sync
+gclient sync -n
 fi
 
+MAKE_TYPE=`cat ~/.markutils/g1_make_type`
+if [[ "$MAKE_TYPE" == *Debug* ]]; then
+  gyp_debug
+elif [[ "$MAKE_TYPE" == *Release* ]]; then
+  FOUND=1
+  gyp_release
+else
+  echo Could not figure out your build type. Did not run gyp!
+fi
 
 # all done :)
 echo You still need to restore and rebase your active branch

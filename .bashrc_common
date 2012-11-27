@@ -67,3 +67,7 @@ alias tev='trace-event-viewer'
 export GYP_GENERATORS=ninja
 alias gyp_debug='./build/gyp_chromium -Dclang=1'
 alias gyp_release='./build/gyp_chromium -Dclang=1 -Gconfig=Release'
+
+if [ -x ~/goma/goma_ctl.sh ]; then
+export PATH=~/goma:$PATH
+fi
