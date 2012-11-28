@@ -72,13 +72,19 @@ if [ -e `cat ~/.markutils/m1`/third_party/llvm-build ]; then
   export PATH=`cat ~/.markutils/m1`/third_party/llvm-build/Release+Asserts/bin:$PATH
 fi
 
-if test `uname` == Darwin; then
-alias gyp_debug='CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1'
-alias gyp_release='CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1 -Gconfig=Release'
-else
-alias gyp_debug='./build/gyp_chromium -Dclang=1'
-alias gyp_release='./build/gyp_chromium -Dclang=1 -Gconfig=Release'
-fi
+function do_gyp {
+  pushd `pwd`
+  cd `cat ~/.markutils/m1`
+  if test `uname` == Darwin; then
+    CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1 -Gconfig=$1
+  else
+    ./build/gyp_chromium -Dclang=1 -Gconfig=$1
+  fi
+  popd
+}
+
+alias gyp_debug='do_gyp Debug'
+alias gyp_release='do_gyp Release'
 
 
 if [ -x ~/goma/goma_ctl.sh ]; then
