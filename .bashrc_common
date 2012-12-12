@@ -75,11 +75,7 @@ fi
 function do_gyp {
   pushd `pwd`
   cd `cat ~/.markutils/m1`
-  if test `uname` == Darwin; then
-    CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1 -Gconfig=$1
-  else
-    ./build/gyp_chromium -Dclang=1 -Gconfig=$1
-  fi
+  CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1 -Gconfig=$1
   popd
 }
 
