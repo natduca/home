@@ -70,9 +70,14 @@
   (ad-activate 'vc-registered)
   )
 
-(defun is-webkit ()
+(defun is-fourspace-indent ()
   (when (buffer-file-name)
-    (string-match "third_party/WebKit/" (buffer-file-name))))
+    (or
+     (string-match "/cc/" (buffer-file-name))
+     (string-match "third_party/WebKit/" (buffer-file-name))
+     )
+    )
+  )
 
 (defun check-webkit-style()
   (interactive "")
@@ -167,7 +172,7 @@
     )
   (when (and
          (fboundp 'column-marker-1)
-         (not (is-webkit)))
+         (not (is-fourspace-indent)))
     (column-marker-1 80))
   (when (fboundp 'show-ws-highlight-trailing-whitespace)
     (show-ws-highlight-trailing-whitespace))
@@ -177,7 +182,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-c-common-hook ()
   (all-mode-hook)
-  (when (is-webkit)
+  (when (is-fourspace-indent)
     (setq c-basic-offset 4))
   )
 (add-hook 'c++-mode-common-hook 'my-c-common-hook)
