@@ -71,10 +71,9 @@ fi
 
 MAKE_TYPE=`cat ~/.markutils/g1_make_type`
 if [[ "$MAKE_TYPE" == *Debug* ]]; then
-  gyp_debug
+  do_gyp Debug
 elif [[ "$MAKE_TYPE" == *Release* ]]; then
-  FOUND=1
-  gyp_release
+  do_gyp Release
 else
   echo Could not figure out your build type. Did not run gyp!
 fi
