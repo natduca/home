@@ -340,7 +340,6 @@
    (mapcar (lambda (b)
              (with-current-buffer b
                    (when (buffer-file-name)
-                     (message (format "Reverting %s" (buffer-file-name)))
                      (revert-buffer 1 1)
                      )))
            (buffer-list))
@@ -509,10 +508,10 @@
   (mapcar (lambda (b)
             (with-current-buffer b
               (when (buffer-file-name)
-                (message (format " %s" (buffer-file-name)))
                 (save-buffer 0)
                 )))
           (buffer-list))
+  (message "Saved all open buffers")
   (if (get-visible-compilation-window)
       (with-selected-frame (window-frame (get-visible-compilation-window))
         (with-temp-buffer
