@@ -29,7 +29,6 @@
          (shell-command-to-string "/usr/bin/sw_vers -productVersion")
          ))
     (when (nd-startswith os-version "10.8")
-      (setq quickopen-prefer-curses t)
       )
 
   (unless (getenv "TERM_PROGRAM")
