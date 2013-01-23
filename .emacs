@@ -158,7 +158,10 @@
 (when (fboundp 'toggle-show-trailing-whitespace-show-ws)
   (toggle-show-trailing-whitespace-show-ws))
 
+(setq auto-save-default nil) ; backups
+
 (defun all-mode-hook()
+  (setq make-backup-files nil) ; backups
   (setq truncate-lines 1)
   (setq indent-tabs-mode nil)
   (local-set-key [(control r) (control v)] 'revert-buffer)
@@ -637,8 +640,6 @@
   (set-fringe-mode 1)
   (set-face-background 'fringe "#0F0F0F")
   )
-
-(setq make-backup-files nil) ;backups
 
 
 (global-set-key [C-S-left] 'shift-left)
