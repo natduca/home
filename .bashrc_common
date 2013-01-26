@@ -86,3 +86,5 @@ alias gyp_release='do_gyp Release'
 if [ -x ~/goma/goma_ctl.sh ]; then
   export PATH=~/goma:$PATH
 fi
+
+alias ssh_with_adb_forwarding='ssh -C -R 5037:localhost:5037 -R 10000:localhost:10000'
