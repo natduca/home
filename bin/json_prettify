@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+import json
+import optparse
+import os
+import sys
+
+def Unquote(x):
+  if isinstance(x, dict):
+    return dict([(x,Unquote(y)) for x,y in x.iteritems()])
+  elif isinstance(x, list):
+    return [Unquote(y) for y in x]
+  elif isinstance(x, basestring):
+    if x.startswith('{') and x.endswith('}'):
+      try:
+        j = json.loads(x)
+        return j
+      except ValueError:
+        return x
+    else:
+      return x
+  elif isinstance(x, float):
+    return x
+  elif isinstance(x, int):
+    return x
+
+def Main(args):
+  parser = optparse.OptionParser('%prog <filename>')
+  parser.add_option('--unquote',
+                    action='store_true',
+                    default=False,
+                    help='Unquotes things that look like quoted json')
+  parser.add_option('-i', '--in-place', dest='in_place',
+                    action='store_true',
+                    help='Prettifies the file in place')
+  options, args = parser.parse_args(args)
+  if len(args) != 1:
+    parser.error('expected filename');
+
+  with open(args[0], 'r') as f:
+    text = f.read()
+  j = json.loads(text)
+  if options.unquote:
+    j = Unquote(j)
+  res = json.dumps(j, indent=2)
+  if options.in_place:
+    with open(args[0], 'w') as f:
+      f.write(res)
+  else:
+    sys.stdout.write(res)
+
+if __name__ == '__main__':
+  sys.exit(Main(sys.argv[1:]))
