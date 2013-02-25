@@ -42,6 +42,7 @@ def Main(args):
   if options.unquote:
     j = Unquote(j)
   res = json.dumps(j, indent=2)
+  res = res.replace(' \n', '\n');
   if options.in_place:
     with open(args[0], 'w') as f:
       f.write(res)
