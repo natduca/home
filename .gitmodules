@@ -13,3 +13,6 @@
 [submodule "elisp/nyan-mode"]
 	path = elisp/nyan-mode
 	url = git://github.com/TeMPOraL/nyan-mode.git
+[submodule "adb_trace"]
+	path = adb_trace
+	url = git://github.com/johnmccutchan/adb_trace.git

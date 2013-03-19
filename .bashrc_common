@@ -36,6 +36,7 @@ fi
 export PATH=$PATH:$H/bin
 export PATH=$PATH:$H/quickopen
 export PATH=$PATH:$H/trace_event_viewer
+export PATH=$PATH:$H/adb_trace
 
 alias qo='quickopen'
 
