@@ -2,6 +2,7 @@
 import json
 import optparse
 import os
+import re
 import sys
 
 def Unquote(x):
@@ -23,6 +24,9 @@ def Unquote(x):
   elif isinstance(x, int):
     return x
 
+def repeatChar(c, n_times):
+  return ''.join([c for i in range(n_times)])
+
 def Main(args):
   parser = optparse.OptionParser('%prog <filename>')
   parser.add_option('--unquote',
@@ -38,7 +42,31 @@ def Main(args):
 
   with open(args[0], 'r') as f:
     text = f.read()
-  j = json.loads(text)
+  try:
+    j = json.loads(text)
+  except ValueError, ex:
+    msg = str(ex)
+    m = re.search('char (\d+)', msg)
+    if m:
+      i = int(m.group(1))
+      lo = max(0, i - 40)
+      hi = lo + 80
+      sys.stderr.write('JSON issue at character %i:\n' % i);
+      if lo > 320:
+        sys.stderr.write(text[lo-320:hi-320] + '\n');
+      if lo > 240:
+        sys.stderr.write(text[lo-240:hi-240] + '\n');
+      if lo > 160:
+        sys.stderr.write(text[lo-160:hi-160] + '\n');
+      if lo > 80:
+        sys.stderr.write(text[lo-80:hi-80] + '\n');
+      sys.stderr.write(text[lo:hi] + '\n');
+      sys.stderr.write(repeatChar(' ', i - lo - 1) + '^\n');
+      m.group(1)
+    else:
+      import pdb; pdb.set_trace()
+    return 1
+
   if options.unquote:
     j = Unquote(j)
   res = json.dumps(j, indent=2)
