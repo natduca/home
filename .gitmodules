@@ -16,3 +16,6 @@
 [submodule "adb_trace"]
 	path = adb_trace
 	url = git://github.com/johnmccutchan/adb_trace.git
+[submodule "yasnippet"]
+	path = yasnippet
+	url = https://github.com/capitaomorte/yasnippet.git

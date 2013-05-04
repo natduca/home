@@ -249,7 +249,7 @@
 (defun my-css-mode-hook ()
   (all-mode-hook)
   (local-set-key "\C-c\C-v" 'save-and-compile)
-  (setq 'css-indent-offset 2)
+  (setq css-indent-offset 2)
   )
 (add-hook 'css-mode-hook 'my-css-mode-hook)
 
@@ -679,3 +679,12 @@
     (compile "~/depot_tools/pylint -f parseable chrome_remote_control -dR0923,R0201,E1101")
     )
   )
+
+
+;; Yasnippet
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "~/home/yasnippet")
+(require 'yasnippet)
+(add-to-list 'yas-snippet-dirs "~/home/snippets")
+(yas-global-mode 1)
+(yas-reload-all)
