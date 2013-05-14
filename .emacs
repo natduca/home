@@ -73,7 +73,6 @@
 (defun is-fourspace-indent ()
   (when (buffer-file-name)
     (or
-     (string-match "/cc/" (buffer-file-name))
      (string-match "third_party/WebKit/" (buffer-file-name))
      )
     )
