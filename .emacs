@@ -645,9 +645,11 @@
   )
 
 (require 'quickopen)
+
 (when (fboundp 'scroll-bar-mode)
   (require 'nyan-mode)
   (scroll-bar-mode 0)
+  (set-variable 'nyan-bar-length 16)
   )
 
 (custom-set-faces
