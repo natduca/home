@@ -178,8 +178,12 @@
 
 ; c/c++
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(load-file "~/home/google-c-style.el")
+
 (defun my-c-common-hook ()
   (all-mode-hook)
+  (google-make-newline-indent)
+  (google-set-c-style)
   (when (is-fourspace-indent)
     (setq c-basic-offset 4))
   )
@@ -274,9 +278,19 @@
 
 ; javascript (non-js2)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun open-line-and-indent (n)
+  "Insert a newline, indent it, and leave point indented before it."
+  (interactive "*p")
+  (open-line n)
+  (indent-according-to-mode)
+  )
+
 (defun my-js-mode-hook()
   (all-mode-hook)
   (setq js-indent-level 2)
+  (local-set-key "\C-o" 'open-line-and-indent)
+  (local-set-key "\C-m" 'newline-and-indent)
+  (local-set-key [ret] 'newline-and-indent)
   )
 (add-hook 'js-mode-hook 'my-js-mode-hook)
 
