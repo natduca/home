@@ -154,12 +154,10 @@
 (setq-default indent-tabs-mode nil)
 (setq comment-empty-lines t)
 
-(when (fboundp 'toggle-show-trailing-whitespace-show-ws)
-  (toggle-show-trailing-whitespace-show-ws))
-
 (setq auto-save-default nil) ; backups
 
 (defun all-mode-hook()
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
   (setq make-backup-files nil) ; backups
   (setq truncate-lines 1)
   (setq indent-tabs-mode nil)
@@ -176,8 +174,6 @@
          (fboundp 'column-marker-1)
          (not (is-fourspace-indent)))
     (column-marker-1 80))
-  (when (fboundp 'show-ws-highlight-trailing-whitespace)
-    (show-ws-highlight-trailing-whitespace))
   )
 
 ; c/c++
@@ -205,11 +201,6 @@
 ; term
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-term-mode-hook ()
-  (when (fboundp 'show-ws-highlight-trailing-whitespace)
-    (when show-ws-highlight-trailing-whitespace-p
-      (toggle-show-trailing-whitespace-show-ws)
-      )
-    )
   (when (fboundp 'global-linum-mode)
     (linum-mode 0) ; disable line numbers
     (set-face-background 'linum "#0F0F0F")
@@ -647,10 +638,6 @@
 ;;  if possible...
 (when (locate-library "goog")
   (load-library "goog")
-  )
-
-(when (locate-library "show-wspace")
-  (load-library "show-wspace")
   )
 
 (when (locate-library "column-marker")
