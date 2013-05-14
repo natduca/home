@@ -7,7 +7,7 @@ alias purge='purge_pyc; purge_tmps'
 alias xterm='xterm -bg black -fg white -sb -sl 5000'
 
 function parse_git_branch {
-  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
 }
 
 function is_android {
@@ -27,9 +27,9 @@ elif test "x$MSYSTEM" == "xMINGW32"; then
 export PS1='\h:\w \$ '
 elif test "x$OSTYPE" != "xcygwin"; then
 if test "x$SSH_CLIENT" != "x"; then
-export PS1='$(is_android)$(parse_git_branch) \[\e[0;33m\]\h:\w\[\e[0m\] \$ '
+export PS1='$(is_android)$(parse_git_branch)\[\e[0;33m\]\h:\w\[\e[0m\] \$ '
 else
-export PS1='$(is_android)$(parse_git_branch) \[\e[0;32m\]\h:\w\[\e[0m\] \$ '
+export PS1='$(is_android)$(parse_git_branch)\[\e[0;32m\]\w\[\e[0m\] \$ '
 fi
 fi
 
