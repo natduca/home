@@ -19,3 +19,6 @@
 [submodule "yasnippet"]
 	path = yasnippet
 	url = https://github.com/capitaomorte/yasnippet.git
+[submodule "johnjbarton-devtools-save"]
+	path = johnjbarton-devtools-save
+	url = https://code.google.com/r/johnjbarton-devtools-save/
