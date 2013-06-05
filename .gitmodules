@@ -22,3 +22,6 @@
 [submodule "johnjbarton-devtools-save"]
 	path = johnjbarton-devtools-save
 	url = https://code.google.com/r/johnjbarton-devtools-save/
+[submodule "stgit"]
+	path = stgit
+	url = git://repo.or.cz/stgit.git
