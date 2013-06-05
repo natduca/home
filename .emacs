@@ -29,6 +29,7 @@
          (shell-command-to-string "/usr/bin/sw_vers -productVersion")
          ))
     (when (nd-startswith os-version "10.8")
+      (setq quickopen-prefer-curses t)
       )
 
   (unless (getenv "TERM_PROGRAM")
@@ -618,7 +619,7 @@
 
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode 0))
-  
+
 (when (fboundp 'menu-bar-mode)
   (menu-bar-mode 0))
 
@@ -659,6 +660,8 @@
   )
 
 (require 'quickopen)
+
+ '(quickopen-prefer-curses t)
 
 (when (fboundp 'scroll-bar-mode)
   (require 'nyan-mode)
