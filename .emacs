@@ -685,6 +685,21 @@
     )
   )
 
+(defun gjslint-tracing()
+  (interactive)
+  (let ((gjslint (concat
+            (read-file-contents (expand-file-name "~/.markutils/m1"))
+            "/third_party/trace-viewer/build/gjslint")
+                 ))
+    (if (file-exists-p gjslint)
+        (compile gjslint)
+      (error "Could not find gjslint at %s" gjslint)
+      )
+    )
+  )
+
+
+
 
 ;; Yasnippet
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
