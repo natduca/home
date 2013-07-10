@@ -516,7 +516,73 @@
           )
   )
 
-(defun save-and-compile()
+(defmacro with-compilation-buffer (&rest body)
+  `(if (get-visible-compilation-window)
+       (with-selected-frame (window-frame (get-visible-compilation-window))
+         (with-temp-buffer
+           (prog1
+               ,@body
+             (with-current-buffer "*compilation*"
+              (set-variable 'truncate-lines 1)
+              )
+             (move-point-to-end-for-buffer "*compilation*")
+             )
+           )
+         )
+     (progn
+       (toggle-compilation-window-layout)
+       (with-temp-buffer
+         (prog1
+             ,@body
+           (with-current-buffer "*compilation*"
+             (set-variable 'truncate-lines 1)
+             )
+           (move-point-to-end-for-buffer "*compilation*")
+           )
+         )
+       )
+     )
+  )
+
+(defvar git-grep-last-value nil)
+
+(defun git-get-top-dir (dir)
+  "Retrieve the top-level directory of a git tree. Returns nil on error or if
+not a git repository.."
+  ;; Borrowed from https://github.com/eglaysher/find-things-fast/blob/master/find-things-fast.el
+  (with-temp-buffer
+    (if (eq 0 (call-process "git" nil t nil "rev-parse"))
+        (let ((cdup (with-output-to-string
+                      (with-current-buffer standard-output
+                        (cd dir)
+                        (call-process "git" nil t nil
+                                      "rev-parse" "--show-cdup")))))
+          (expand-file-name (concat (file-name-as-directory dir)
+                                    (car (split-string cdup "\n")))))
+      nil)))
+
+(defun git-grep (grep-command)
+  (interactive (list
+                (read-from-minibuffer "git grep: " git-grep-last-value)
+                )
+               )
+  (setq git-grep-last-value grep-command)
+  (save-all)
+  (let (
+        (old-pager (getenv "PAGER"))
+        (directory-in-which-to-grep (git-get-top-dir default-directory))
+        )
+    (setenv "PAGER" "cat")
+    (with-compilation-buffer
+     (setq default-directory directory-in-which-to-grep)
+     (compile (format "git grep --no-color -n -- %s" (shell-quote-argument grep-command)))
+     )
+    (setenv "PAGER" old-pager)
+    )
+  )
+
+
+(defun save-all ()
   (interactive "")
   (mapcar (lambda (b)
             (with-current-buffer b
@@ -525,29 +591,16 @@
                 )))
           (buffer-list))
   (message "Saved all open buffers")
-  (if (get-visible-compilation-window)
-      (with-selected-frame (window-frame (get-visible-compilation-window))
-        (with-temp-buffer
-          (setq default-directory (get_g1_make_dir))
-          (compile (expand-file-name "~/home/bin/do_g1_make"))
-          (with-current-buffer "*compilation*"
-            (set-variable 'truncate-lines 1)
-            )
-          (move-point-to-end-for-buffer "*compilation*")
-          )
-        )
-    (progn
-      (toggle-compilation-window-layout)
-      (with-temp-buffer
-        (setq default-directory (get_g1_make_dir))
-        (compile (expand-file-name "~/home/bin/do_g1_make"))
-        (with-current-buffer "*compilation*"
-          (set-variable 'truncate-lines 1)
-          )
-        (move-point-to-end-for-buffer "*compilation*")
-        )
-      )
-    )
+  )
+
+(defun save-and-compile ()
+  (interactive "")
+  (save-all)
+  (with-compilation-buffer
+   (setq default-directory (get_g1_make_dir))
+   (kill-compilation)
+   (compile (expand-file-name "~/home/bin/do_g1_make"))
+   )
   )
 
 
@@ -556,6 +609,7 @@
 (global-set-key "\C-c\C-f" 'next-error-and-center)
 (global-set-key "\C-c\C-r" 'recompile)
 (global-set-key "\C-c\C-v" 'save-and-compile)
+(global-set-key "\C-c\C-g" 'git-grep)
 
 ;; Renames
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
