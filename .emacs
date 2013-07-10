@@ -544,8 +544,6 @@
      )
   )
 
-(defvar git-grep-last-value nil)
-
 (defun git-get-top-dir (dir)
   "Retrieve the top-level directory of a git tree. Returns nil on error or if
 not a git repository.."
@@ -561,24 +559,70 @@ not a git repository.."
                                     (car (split-string cdup "\n")))))
       nil)))
 
-(defun git-grep (grep-command)
-  (interactive (list
-                (read-from-minibuffer "git grep: " git-grep-last-value)
-                )
-               )
-  (setq git-grep-last-value grep-command)
-  (save-all)
+(defun -git-grep-impl (directory-in-which-to-grep grep-cmd)
   (let (
         (old-pager (getenv "PAGER"))
-        (directory-in-which-to-grep (git-get-top-dir default-directory))
         )
     (setenv "PAGER" "cat")
     (with-compilation-buffer
      (setq default-directory directory-in-which-to-grep)
-     (compile (format "git grep --no-color -n -- %s" (shell-quote-argument grep-command)))
+     (compile grep-cmd)
      )
     (setenv "PAGER" old-pager)
     )
+  )
+
+(defvar git-grep-initial-value nil)
+(defvar git-grep-filtered-values '())
+(defvar git-grep-directory-in-which-to-grep nil)
+
+(defun -git-update-grep ()
+  (let ((cmd nil)
+        )
+    (setq cmd (format "git grep --no-color -n -- %s"
+                      (shell-quote-argument git-grep-initial-value)
+                      )
+          )
+    (when (> (length git-grep-filtered-values) 0)
+      (setq cmd (format "%s | %s" cmd
+                        (mapconcat
+                         (lambda (x)
+                           (format "grep -v %s" x)
+                           )
+                         git-grep-filtered-values
+                         " | "
+                         )
+                        )
+            )
+      )
+    (-git-grep-impl git-grep-directory-in-which-to-grep cmd)
+    )
+  )
+
+(defun git-grep (grep-command)
+  (interactive (list
+                (read-from-minibuffer "git grep: " git-grep-initial-value)
+                )
+               )
+  (setq git-grep-directory-in-which-to-grep (git-get-top-dir default-directory))
+  (setq git-grep-initial-value grep-command)
+  (setq git-grep-filtered-values '())
+  (-git-update-grep)
+  )
+
+(defun git-refine-grep (grep-filter)
+  (interactive (list
+                (read-from-minibuffer "grep -v : " nil)
+                )
+               )
+  (when (null git-grep-initial-value)
+    (error "Must have a grep in progress")
+    )
+
+  (setq git-grep-filtered-values
+        (append git-grep-filtered-values
+                (list grep-filter)))
+  (-git-update-grep)
   )
 
 
@@ -610,6 +654,7 @@ not a git repository.."
 (global-set-key "\C-c\C-r" 'recompile)
 (global-set-key "\C-c\C-v" 'save-and-compile)
 (global-set-key "\C-c\C-g" 'git-grep)
+(global-set-key "\C-c\C-e" 'git-refine-grep)
 
 ;; Renames
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
