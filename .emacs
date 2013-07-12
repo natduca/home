@@ -560,16 +560,11 @@ not a git repository.."
       nil)))
 
 (defun -git-grep-impl (directory-in-which-to-grep grep-cmd)
-  (let (
-        (old-pager (getenv "PAGER"))
-        )
-    (setenv "PAGER" "cat")
-    (with-compilation-buffer
-     (setq default-directory directory-in-which-to-grep)
-     (compile grep-cmd)
-     )
-    (setenv "PAGER" old-pager)
-    )
+  (setq compilation-environment '("PAGER=cat"))
+  (with-compilation-buffer
+   (setq default-directory directory-in-which-to-grep)
+   (compile grep-cmd)
+   )
   )
 
 (defvar git-grep-initial-value nil)
