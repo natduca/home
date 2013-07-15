@@ -637,7 +637,9 @@ not a git repository.."
   (save-all)
   (with-compilation-buffer
    (setq default-directory (get_g1_make_dir))
-   (kill-compilation)
+   (when (get-buffer-process (current-buffer))
+     (kill-compilation)
+     )
    (compile (expand-file-name "~/home/bin/do_g1_make"))
    )
   )
