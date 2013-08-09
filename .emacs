@@ -706,6 +706,7 @@ not a git repository.."
   (set-background-color "black")
   (set-foreground-color "white")
   (set-cursor-color "white")
+  (blink-cursor-mode nil)
   )
 
 (setq default-frame-alist
