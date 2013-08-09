@@ -49,7 +49,18 @@ alias gs='git status'
 alias gpr='git pull --rebase; git submodule update --init --recursive'
 function gg() { git grep "$@" -- "*.cpp" "*.h" "*.cc" "*.c"; }
 
-alias chrome_clang_env='source ~/home/chrome_clang_env'
+CHROME_FLAGS="--enable-threaded-compositing --force-compositing-mode --enable-impl-side-painting --enable-skia-benchmarking --allow-webui-compositing"
+if test `uname` == Darwin; then
+  CHROME_APP="Chromium.app/Contents/MacOS/Chromium"
+else
+  CHROME_APP=chrome
+fi
+
+alias chrome_debug='`cat ~/.markutils/m1`/out/Debug/${CHROME_APP} $CHROME_FLAGS'
+alias chrome_release='`cat ~/.markutils/m1`/out/Release/${CHROME_APP} $CHROME_FLAGS'
+if test `uname` == Darwin; then
+  alias chrome_canary='/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary $CHROME_FLAGS'
+fi
 
 if test `uname` == Darwin; then
 alias mt='mvim --remote-tab'
