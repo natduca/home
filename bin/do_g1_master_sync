@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash -li
 pushd `cat ~/.markutils/m1`
 
 echo Chrome: fetch
