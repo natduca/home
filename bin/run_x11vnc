@@ -1,1 +1,1 @@
-x11vnc -xkb -display :0
+x11vnc -xkb -display :0 -reopen -rfbauth ~/.vnc/passwd
