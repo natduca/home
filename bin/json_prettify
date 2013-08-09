@@ -40,8 +40,17 @@ def Main(args):
   if len(args) != 1:
     parser.error('expected filename');
 
-  with open(args[0], 'r') as f:
+  if args[0] == '-':
+    f = sys.stdin
+  else:
+    f = open(args[0], 'r')
+
+  try:
     text = f.read()
+  finally:
+    if f != sys.stdin:
+      f.close()
+
   try:
     j = json.loads(text)
   except ValueError, ex:
@@ -64,7 +73,7 @@ def Main(args):
       sys.stderr.write(repeatChar(' ', i - lo - 1) + '^\n');
       m.group(1)
     else:
-      import pdb; pdb.set_trace()
+      raise
     return 1
 
   if options.unquote:
