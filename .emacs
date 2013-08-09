@@ -11,6 +11,9 @@
           ;; gcc-include
           ;; lcc
 
+;; Dabbrev should treat foo_ as a single word.
+(setq dabbrev-abbrev-char-regexp "\\(\\sw\\|\\s_\\)_?")
+
 (defun nd-startswith (str substr)
   (interactive "")
   (if (>= (length str) (length substr))
