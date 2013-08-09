@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+import collections
+import os
+import optparse
+import sys
+
+def AddFileToCounts(file, counts):
+  if file == '-':
+    lines = sys.stdin.readlines()
+  else:
+    with open('contribs.txt', 'r') as f:
+      lines = f.readlines()
+
+  for line in lines:
+    value = line.strip()
+    counts[value] += 1
+
+def Main(args):
+  parser = optparse.OptionParser(usage="%prog [options] files")
+  parser.add_option('--min-frequency', default=1, type=int)
+  options, args = parser.parse_args(args)
+  if len(args) == 0:
+    parser.error('At least one input is required')
+
+  counts = collections.defaultdict(int)
+
+  for file in args:
+    AddFileToCounts(file, counts)
+
+  filtered_counts = dict((k,v)
+                         for k,v in counts.items()
+                         if v >= options.min_frequency)
+  print '\n'.join(['%s,%s' % (k,v) for k,v in filtered_counts.items()])
+
+if __name__ == "__main__":
+  sys.exit(Main(sys.argv[1:]))
