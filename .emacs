@@ -567,17 +567,18 @@ not a git repository.."
                                     (car (split-string cdup "\n")))))
       nil)))
 
-(defun -git-grep-impl (directory-in-which-to-grep grep-cmd)
+(defvar git-grep-initial-value nil)
+(defvar git-grep-filtered-values '())
+(defvar git-grep-directory-in-which-to-run-grep nil)
+(defvar git-grep-directory-to-actually-grep nil)
+
+(defun -git-grep-impl (directory-in-which-to-run-grep grep-cmd)
   (setq compilation-environment '("PAGER=cat"))
   (with-compilation-buffer
-   (setq default-directory directory-in-which-to-grep)
+   (setq default-directory directory-in-which-to-run-grep)
    (compile grep-cmd)
    )
   )
-
-(defvar git-grep-initial-value nil)
-(defvar git-grep-filtered-values '())
-(defvar git-grep-directory-in-which-to-grep nil)
 
 (defun -git-update-grep ()
   (let ((cmd nil)
@@ -586,6 +587,9 @@ not a git repository.."
                       (shell-quote-argument git-grep-initial-value)
                       )
           )
+    (when git-grep-directory-to-actually-grep
+      (setq cmd (format "%s %s" cmd git-grep-directory-to-actually-grep))
+      )
     (when (> (length git-grep-filtered-values) 0)
       (setq cmd (format "%s | %s" cmd
                         (mapconcat
@@ -598,7 +602,7 @@ not a git repository.."
                         )
             )
       )
-    (-git-grep-impl git-grep-directory-in-which-to-grep cmd)
+    (-git-grep-impl git-grep-directory-in-which-to-run-grep cmd)
     )
   )
 
@@ -607,9 +611,21 @@ not a git repository.."
                 (read-from-minibuffer "git grep: " git-grep-initial-value)
                 )
                )
-  (setq git-grep-directory-in-which-to-grep (git-get-top-dir default-directory))
+  (setq git-grep-directory-in-which-to-run-grep (git-get-top-dir default-directory))
   (setq git-grep-initial-value grep-command)
   (setq git-grep-filtered-values '())
+  (-git-update-grep)
+  )
+
+(defun git-change-grep-dir (grep-dir)
+  (interactive (list
+                (read-file-name "grep-dir : " git-grep-directory-in-which-to-run-grep)
+                )
+               )
+  (if (eq grep-dir "")
+      (setq git-grep-directory-to-actually-grep nil)
+    (setq git-grep-directory-to-actually-grep grep-dir)
+    )
   (-git-update-grep)
   )
 
