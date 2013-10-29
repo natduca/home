@@ -314,7 +314,7 @@
   (setq python-indent 2)
   (local-set-key "\C-c\C-v" 'save-and-compile)
   (local-unset-key (kbd "C-c C-f"))
-  (local-set-key (kbd "C-c C-r") 'recompile)
+  (local-set-key (kbd "C-c C-r") 'save-and-recompile)
   )
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
@@ -647,11 +647,21 @@ not a git repository.."
    )
   )
 
+(defun save-and-recompile ()
+  (interactive "")
+  (save-all)
+  (with-compilation-buffer
+   (when (get-buffer-process (current-buffer))
+     (kill-compilation)
+     )
+   (recompile)
+   )
+  )
 
 
 (global-set-key "\C-c\C-b" 'previous-error-and-center)
 (global-set-key "\C-c\C-f" 'next-error-and-center)
-(global-set-key "\C-c\C-r" 'recompile)
+(global-set-key "\C-c\C-r" 'save-and-recompile)
 (global-set-key "\C-c\C-v" 'save-and-compile)
 (global-set-key "\C-c\C-g" 'git-grep)
 (global-set-key "\C-c\C-e" 'git-refine-grep)
