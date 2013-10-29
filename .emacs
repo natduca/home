@@ -389,8 +389,6 @@
   )
 (ad-activate 'linum-on)
 
-(global-set-key (kbd "C-c C-r") 'recompile)
-
 (global-set-key (kbd "C-M-o")
                 (lambda ()
                   (interactive "")
