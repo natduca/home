@@ -466,14 +466,21 @@
       (window-live-p (frame-parameter frame 'compilation-layout-active))
     nil))
 
-(defun compilation-window-selected(&optional frame)
-  (eq (selected-window) (frame-parameter frame 'compilation-layout-active)))
+(defun compilation-window-is-visible-and-selected(&optional frame)
+  ;; This currently doesn't consider whether the window is off on another
+  ;; desktop. So, just assume its visible for now. You'd think
+  ;;    (frame-visible-p frame)
+  ;; would work, but it does't on OSX with multiple desktops. Puzzles.
+  (if nil
+      (eq (selected-window) (frame-parameter frame 'compilation-layout-active))
+    t)
+  )
 
 (defvar compilation-window-layout-window-height 15)
 
 (defun toggle-compilation-window-layout ()
   (if (compilation-window-layout-active)
-      (if (compilation-window-selected)
+      (if (compilation-window-is-visible-and-selected)
           (progn
             (delete-window (frame-parameter nil 'compilation-layout-active))
             (set-frame-parameter nil 'compilation-layout-active nil)
