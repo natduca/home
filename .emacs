@@ -42,7 +42,6 @@
   )
 
 
-
 ;; Search paths
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (when (and
@@ -839,3 +838,10 @@ not a git repository.."
 (add-to-list 'yas-snippet-dirs "~/home/snippets")
 (yas-global-mode 1)
 (yas-reload-all)
+
+
+;; Server
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(when (has-gui) ; Why yes, this is indeed ghetto.
+  (server-start)
+  )
