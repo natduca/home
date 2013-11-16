@@ -314,8 +314,56 @@
   (local-set-key "\C-c\C-v" 'save-and-compile)
   (local-unset-key (kbd "C-c C-f"))
   (local-set-key (kbd "C-c C-r") 'save-and-recompile)
+
+  (setq running-next-error-hook nil)
+  (add-hook 'next-error-hook (lambda ()
+                               (with-current-buffer "*compilation*"
+                                 (unless running-next-error-hook
+                                   (setq running-next-error-hook t)
+                                   (unwind-protect
+                                       (python-compilation-goto-last-error-in-stack)
+                                     (setq running-next-error-hook nil)
+                                     )
+                                   )
+                                 )
+                               )
+            t t)
   )
 (add-hook 'python-mode-hook 'my-python-mode-hook)
+
+(add-hook 'next-error-hook 'my-python-mode-hook)
+
+(defun -python-compilation-get-current-line()
+  (buffer-substring-no-properties
+   (line-beginning-position) (line-end-position)
+   )
+  )
+(defun -python-compilation-is-on-stack-trace-line()
+  (let ((line-text (-python-compilation-get-current-line)))
+    (or
+     (nd-startswith line-text "  File \"")
+     )
+    )
+  )
+
+(defun python-compilation-goto-last-error-in-stack ()
+  (interactive "")
+  (unless (-python-compilation-is-on-stack-trace-line)
+    ;(message "buffer=%s line=%s" (buffer-name (current-buffer)) (-python-compilation-get-current-line))
+    (error "Must start at a stack trace")
+    )
+  (while (-python-compilation-is-on-stack-trace-line)
+    (next-line)
+    (next-line)
+    ;(message "Now at %s" (-python-compilation-get-current-line))
+    )
+  ;(message "Done, at %s" (-python-compilation-get-current-line))
+  (previous-line)
+  (previous-line)
+  ;(message "Commit at %s" (-python-compilation-get-current-line))
+  (compile-goto-error)
+  (recenter-top-bottom)
+  )
 
 ; Latex
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
