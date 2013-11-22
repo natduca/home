@@ -87,13 +87,21 @@ fi
 
 function do_gyp {
   pushd `pwd`
-  cd `cat ~/.markutils/m1`
-  CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1 -Gconfig=$1
+  cd `cat ~/.markutils/m$1`
+  if test "$1" == "1"; then
+    CC=clang CXX=clang++ ./build/gyp_chromium -Dclang=1 -Gconfig=$2
+  else
+    echo clank mode
+    ./build/gyp_chromium -Gconfig=$2
+  fi
   popd
 }
 
-alias gyp_debug='do_gyp Debug'
-alias gyp_release='do_gyp Release'
+alias gyp_debug='do_gyp 1 Debug'
+alias gyp_release='do_gyp 1 Release'
+
+alias clank_gyp_debug='do_gyp 2 Debug'
+alias clank_gyp_release='do_gyp 2 Release'
 
 
 if [ -x ~/goma/goma_ctl.sh ]; then
