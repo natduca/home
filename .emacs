@@ -863,6 +863,16 @@ not a git repository.."
     )
   )
 
+(defun run-tests-telemetry(extra_args)
+  (interactive "Mextra_args: ")
+  (compile (format "%s/tools/telemetry/run_tests %s" (get_g1_dir) extra_args))
+  )
+
+(defun run-tests-perf(extra_args)
+  (interactive "Mextra_args: ")
+  (compile (format "%s/tools/perf/run_tests %s" (get_g1_dir) extra_args))
+  )
+
 (defun gjslint-tracing()
   (interactive)
   (let ((gjslint (concat
