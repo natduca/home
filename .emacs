@@ -32,7 +32,6 @@
          (shell-command-to-string "/usr/bin/sw_vers -productVersion")
          ))
     (when (nd-startswith os-version "10.8")
-      (setq quickopen-prefer-curses t)
       )
 
   (unless (getenv "TERM_PROGRAM")
@@ -839,8 +838,6 @@ not a git repository.."
 
 (require 'quickopen)
 
- '(quickopen-prefer-curses t)
-
 (when (fboundp 'scroll-bar-mode)
   (require 'nyan-mode)
   (scroll-bar-mode 0)
@@ -866,6 +863,11 @@ not a git repository.."
 (defun run-tests-telemetry(extra_args)
   (interactive "Mextra_args: ")
   (compile (format "%s/tools/telemetry/run_tests %s" (get_g1_dir) extra_args))
+  )
+
+(defun run-tests-trace-viewer(extra_args)
+  (interactive "Mextra_args: ")
+  (compile (format "%s/third_party/trace-viewer/run_tests %s" (get_g1_dir) extra_args))
   )
 
 (defun run-tests-perf(extra_args)
