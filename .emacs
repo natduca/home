@@ -156,6 +156,7 @@
 (setq-default indent-tabs-mode nil)
 (setq comment-empty-lines t)
 
+(setq create-lockfiles nil) ; interlock files
 (setq auto-save-default nil) ; backups
 
 (defun all-mode-hook()
