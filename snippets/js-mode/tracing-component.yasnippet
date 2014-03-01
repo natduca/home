@@ -4,25 +4,12 @@
 /**
  * @constructor
  */
-var ${1:ClassName} = ui.define(${2:BaseClassName});
+var ${1:ClassName} = tvcm.ui.define(${2:BaseClassTag});
 
 $1.prototype = {
-  __proto__: $2.prototype,
+  __proto__: ${3:BaseClassName}.prototype,
 
   decorate: function() {
-    this.${3:primaryField}_ = undefined;
-  },
-
-  get $3() {
-    return this.$3_;
-  },
-
-  set $3($3) {
-    this.$3_ = $3;
-    this.updateContents_();
-  },
-
-  updateContents_: function() {
-
+    $0
   }
 };
