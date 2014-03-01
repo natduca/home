@@ -622,6 +622,7 @@ not a git repository.."
   (setq compilation-environment '("PAGER=cat"))
   (with-compilation-buffer
    (setq default-directory directory-in-which-to-run-grep)
+   (cd directory-in-which-to-run-grep)
    (compile grep-cmd)
    )
   )
@@ -665,7 +666,7 @@ not a git repository.."
 
 (defun git-change-grep-dir (grep-dir)
   (interactive (list
-                (read-file-name "grep-dir : " git-grep-directory-in-which-to-run-grep)
+                (read-directory-name "grep-dir : " git-grep-directory-in-which-to-run-grep)
                 )
                )
   (if (eq grep-dir "")
