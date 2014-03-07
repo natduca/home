@@ -877,11 +877,16 @@ not a git repository.."
   (compile (format "%s/tools/perf/run_tests %s" (get_g1_dir) extra_args))
   )
 
+(defun gjslint-telemetry()
+  (interactive)
+  (compile (format "%s %s" (expand-file-name "~/home/bin/gjslint_telemetry")))
+  )
+
 (defun gjslint-tracing()
   (interactive)
   (let ((gjslint (concat
             (read-file-contents (expand-file-name "~/.markutils/m1"))
-            "/third_party/trace-viewer/build/gjslint")
+            "/third_party/trace-viewer/trace_viewer/build/gjslint")
                  ))
     (if (file-exists-p gjslint)
         (compile gjslint)
@@ -889,8 +894,6 @@ not a git repository.."
       )
     )
   )
-
-
 
 
 ;; Yasnippet

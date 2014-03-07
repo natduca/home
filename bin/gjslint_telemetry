@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+# Copyright (c) 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import os
+import sys
+
+if __name__ == '__main__':
+  m1 = os.path.expanduser('~/.markutils/m1')
+  with open(m1, 'r') as f:
+    m1 = f.read().strip()
+  telemetry_path = os.path.abspath(os.path.join(
+    m1, 'tools', 'telemetry'))
+  sys.path.append(telemetry_path)
+
+  from telemetry.web_components import web_components_project
+  from tvcm import gjslint
+  sys.exit(gjslint.Main([os.path.join(telemetry_path, 'telemetry')]))
