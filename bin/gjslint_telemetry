@@ -16,4 +16,4 @@ if __name__ == '__main__':
 
   from telemetry.web_components import web_components_project
   from tvcm import gjslint
-  sys.exit(gjslint.Main([os.path.join(telemetry_path, 'telemetry')]))
+  sys.exit(gjslint.Main([os.path.join(telemetry_path, 'telemetry', 'web_components')]))

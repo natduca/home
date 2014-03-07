@@ -879,7 +879,7 @@ not a git repository.."
 
 (defun gjslint-telemetry()
   (interactive)
-  (compile (format "%s %s" (expand-file-name "~/home/bin/gjslint_telemetry")))
+  (compile (format "%s" (expand-file-name "~/home/bin/gjslint_telemetry")))
   )
 
 (defun gjslint-tracing()
