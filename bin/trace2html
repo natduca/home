@@ -1,0 +1,4 @@
+#!/bin/sh
+
+M1_DIR=`cat ~/.markutils/m1`
+${M1_DIR}/third_party/trace-viewer/trace2html $@
