@@ -36,7 +36,7 @@
 
   (unless (getenv "TERM_PROGRAM")
     (setenv "PATH"
-            (shell-command-to-string "source $HOME/.bashrc && printf $PATH")))
+            (shell-command-to-string "source $HOME/.profile && printf $PATH")))
   )
   )
 
