@@ -1,0 +1,34 @@
+# name: tvcm-full-component
+# key: tvcm-full-component
+# --
+// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+'use strict';
+
+tvcm.require('tvcm.utils');
+
+tvcm.requireTemplate('$1');
+
+tvcm.exportTo('$2', function() {
+  /**
+   * @constructor
+   */
+  var $3 = tvcm.ui.define('$4');
+
+  $3.prototype = {
+    __proto__: HTMLUnknownElement.prototype,
+
+    decorate: function() {
+      var node = tvcm.instantiateTemplate('$4-template');
+      this.appendChild(node);
+
+    }
+  };
+
+
+  return {
+    $3: $3
+  };
+});
