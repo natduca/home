@@ -11,8 +11,10 @@ function parse_git_branch {
 }
 
 function is_android {
-  if [ -d "${ANDROID_NDK_ROOT}" ]; then
+  if [ -d "${ENVSETUP_GYP_CHROME_SRC}" ]; then
     echo "(android) "
+
+
   fi
   echo ""
 }
