@@ -50,6 +50,11 @@ alias gcaa='EDITOR=true git commit -a --amend'
 alias gs='git status'
 alias gpr='git pull --rebase; git submodule update --init --recursive'
 function gg() { git grep "$@" -- "*.cpp" "*.h" "*.cc" "*.c"; }
+if test `uname` == Darwin; then
+alias git-gui='/usr/local/git/bin/git gui'
+else
+alias git-gui='git gui'
+fi
 
 CHROME_FLAGS="--enable-threaded-compositing --force-compositing-mode --enable-impl-side-painting --enable-skia-benchmarking --allow-webui-compositing"
 if test `uname` == Darwin; then
