@@ -903,6 +903,11 @@ not a git repository.."
 (add-to-list 'yas-snippet-dirs "~/home/snippets")
 (yas-global-mode 1)
 (yas-reload-all)
+(defun yas-html-mode-hook ()
+  (all-mode-hook)
+  (local-set-key (kbd "C-i") 'indent-for-tab-command)
+  )
+(add-hook 'html-mode-hook 'yas-html-mode-hook)
 
 
 ;; Server
