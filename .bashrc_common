@@ -46,7 +46,7 @@ alias qo='quickopen'
 alias ga='git add .'
 alias gc='git commit -m .'
 alias gca='git commit --amend'
-alias gcaa='EDITOR=true git commit -a --amend'
+alias gcaa='git add -u; EDITOR=true git commit --amend'
 alias gs='git status'
 alias gpr='git pull --rebase; git submodule update --init --recursive'
 function gg() { git grep "$@" -- "*.cpp" "*.h" "*.cc" "*.c"; }
