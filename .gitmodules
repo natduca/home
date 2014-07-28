@@ -1,5 +1,5 @@
-[submodule "vimrc/vim-pathogen"]
-	path = vimrc/vim-pathogen
+[submodule ".vim/vim-pathogen"]
+	path = .vim/vim-pathogen
 	url = http://github.com/tpope/vim-pathogen.git
 [submodule "quickopen"]
 	path = quickopen
