@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+import sys
+import os
+
+_HOME_PATH = os.path.abspath(os.path.dirname(__file__))
+
+class Link(object):
+  def __init__(self, dst_path, src_path):
+    self.dst_path = dst_path
+    self.src_path = src_path
+
+  def Update(self):
+    home_path = os.path.expanduser('~')
+    full_src_path = os.path.join(_HOME_PATH, self.src_path)
+
+    full_dst_path = os.path.expanduser(self.dst_path)
+    full_dst_path_dirname = os.path.dirname(full_dst_path)
+
+    src_path_rel = os.path.relpath(full_src_path, full_dst_path_dirname)
+
+    sys.stdout.write('~/%s -> %s: ' % (os.path.relpath(full_dst_path, home_path),
+                                       src_path_rel))
+
+
+    assert os.path.exists(full_src_path)
+    if not os.path.exists(full_dst_path_dirname):
+      sys.stdout.write('ERROR\n\n')
+      sys.stdout.write('  Skipping linking of %s because dst dir doesn\'t exist\n' % self.src_path)
+      sys.stdout.write('\n\n')
+      return
+
+    if os.path.exists(full_dst_path) or os.path.islink(full_dst_path):
+      if not os.path.islink(full_dst_path):
+        sys.stdout.write('ERROR\n\n')
+        sys.stdout.write('  Cannot proceed, dst is a symlink:\n  %s\n' % full_dst_path)
+        sys.stdout.write('\n\n')
+        return
+
+      existing_src_path_rel = os.readlink(full_dst_path)
+      if existing_src_path_rel == src_path_rel:
+        sys.stdout.write('Already up to date\n')
+        return
+      os.unlink(full_dst_path)
+
+    sys.stdout.write('UPDATED\n')
+    os.symlink(src_path_rel, full_dst_path)
+
+def Update():
+  assert os.path.samefile(os.path.expanduser('~/home'),
+                          _HOME_PATH)
+  links = []
+  links.append(Link('~/.emacs', '.emacs'))
+  links.append(Link('~/.gitconfig', '.gitconfig'))
+  links.append(Link('~/.vim', '.vim'))
+  links.append(Link('~/.vimrc', '.vimrc'))
+
+  if sys.platform == 'darwin':
+    sublime_user_path = '~/Library/Application Support/Sublime Text 2/Packages/User'
+  else:
+    raise NotImplemented('Need this platform added')
+
+  links.append(Link(os.path.join(sublime_user_path,
+                                 'Preferences.sublime-settings'),
+                    'Preferences.sublime-settings'))
+
+  for link in links:
+    link.Update()
+
+if __name__ == '__main__':
+  assert len(sys.argv) == 1
+  sys.exit(Update())
