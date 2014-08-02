@@ -25,3 +25,6 @@
 [submodule "stgit"]
 	path = stgit
 	url = git://repo.or.cz/stgit.git
+[submodule "SublimeUser/SublimeAllAutocomplete"]
+	path = SublimeUser/SublimeAllAutocomplete
+	url = https://github.com/alienhard/SublimeAllAutocomplete

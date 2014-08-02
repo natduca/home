@@ -59,9 +59,8 @@ def Update():
   else:
     raise NotImplemented('Need this platform added')
 
-  links.append(Link(os.path.join(sublime_user_path,
-                                 'Preferences.sublime-settings'),
-                    'Preferences.sublime-settings'))
+  links.append(Link(sublime_user_path,
+                    'SublimeUser'))
 
   for link in links:
     link.Update()
