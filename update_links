@@ -45,6 +45,11 @@ class Link(object):
     sys.stdout.write('UPDATED\n')
     os.symlink(src_path_rel, full_dst_path)
 
+def FindDirsInside(dir):
+  full_dir = os.path.join(_HOME_PATH, dir)
+  full_filenames = [os.path.join(full_dir, x) for x in os.listdir(full_dir)]
+  return [x for x in full_filenames if os.path.isdir(x)]
+
 def Update():
   assert os.path.samefile(os.path.expanduser('~/home'),
                           _HOME_PATH)
@@ -55,12 +60,25 @@ def Update():
   links.append(Link('~/.vimrc', '.vimrc'))
 
   if sys.platform == 'darwin':
-    sublime_user_path = '~/Library/Application Support/Sublime Text 2/Packages/User'
+    sublime_packages_path = '~/Library/Application Support/Sublime Text 2/Packages'
+    sublime_user_path = os.path.join(sublime_packages_path, 'User')
+  elif 'linux' in sys.platform:
+    sublime_packages_path = None
+    sublime_user_path = None
   else:
     raise NotImplemented('Need this platform added')
 
-  links.append(Link(sublime_user_path,
-                    'SublimeUser'))
+  if sublime_user_path:
+    package_dirs = FindDirsInside('SublimePackages')
+    for package_dir in package_dirs:
+      package_name = os.path.basename(package_dir)
+      src_path = os.path.relpath(package_dir, _HOME_PATH)
+      dst_path = os.path.join(sublime_packages_path, package_name)
+      import pdb; pdb.set_trace()
+      links.append(Link(dst_path, src_path))
+
+    links.append(Link(sublime_user_path,
+                      'SublimeUser'))
 
   for link in links:
     link.Update()
