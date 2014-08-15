@@ -116,3 +116,8 @@ if [ -x ~/goma/goma_ctl.sh ]; then
 fi
 
 alias ssh_with_adb_forwarding='ssh -C -R 5037:localhost:5037 -R 10000:localhost:10000'
+
+
+if test `uname` == Darwin; then
+  export PATH=$PATH:/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin
+fi
