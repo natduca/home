@@ -74,7 +74,6 @@ def Update():
       package_name = os.path.basename(package_dir)
       src_path = os.path.relpath(package_dir, _HOME_PATH)
       dst_path = os.path.join(sublime_packages_path, package_name)
-      import pdb; pdb.set_trace()
       links.append(Link(dst_path, src_path))
 
     links.append(Link(sublime_user_path,
