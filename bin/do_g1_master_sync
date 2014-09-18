@@ -53,9 +53,6 @@ fi
 
 popd
 
-echo WebKit: update gclient to deps
-./tools/sync-webkit-git.py
-
 # checkout gclient on webkit
 pushd third_party/WebKit
 echo WebKit: checkout gclient
