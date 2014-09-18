@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+import collections
+import json
+import optparse
+import os
+import sys
+
+def _InitTelemetry():
+  likely_paths = [
+    '/usr/local/google/code/chrome/src/tools/telemetry',
+    '~/Local/chrome/src/tools/telemetry',
+    '~/Projects/telemetry'
+  ]
+  if os.getenv('TELEMETRY_PATH'):
+    likely_paths.append(os.getenv('TELEMETRY_PATH'))
+  for p in likely_paths:
+    p = os.path.expanduser(p)
+    if os.path.exists(os.path.join(p, 'telemetry', '__init__.py')):
+      if p not in sys.path:
+        sys.path.append(p)
+      return
+  sys.stderr.write('Could not find telemetry. Please set TELEMETRY_PATH\n')
+  sys.exit(255)
+_InitTelemetry()
+
+from telemetry.timeline import model as model_module
+from telemetry.timeline import tracing_timeline_data
+
+def SummarizeRendererSliceOfName(model, name):
+  renderer_threads = [
+    x for x in model.GetAllThreads()
+    if x.name == 'CrRendererMain']
+
+  cpu_time_totals = collections.defaultdict(float)
+  slice_count = collections.defaultdict(int)
+  for t in renderer_threads:
+    for s in t.IterAllSlicesOfName(slice_name):
+      cpu_time_totals['*' + s.name] += s.thread_duration
+      slice_count['*' + s.name] += 1
+      for subslice in s.sub_slices:
+        cpu_time_totals[subslice.name] += subslice.thread_duration
+        slice_count[subslice.name] += 1
+
+  for k, v in cpu_time_totals.iteritems():
+    n = slice_count[k]
+    print "%60s %9.3fms total (%i calls) (%9.3fms/call)" % (k, v, n, v/float(n))
+
+def Main(args):
+  parser = optparse.OptionParser()
+  options, args = parser.parse_args(args)
+
+  if len(args) == 0:
+    parser.error('Must provide a trace filename')
+  if len(args) != 1:
+    parser.error('Must provide only one trace')
+
+  with open(args[0], 'r') as f:
+    trace_data = json.load(f)
+
+  model = model_module.TimelineModel(
+      tracing_timeline_data.TracingTimelineData(trace_data))
+  SummarizeRendererSliceOfName(model, options, 'WebViewImpl::layout')
+
+  sys.exit(1)
+
+if __name__ == '__main__':
+  sys.exit(Main(sys.argv[1:]))
