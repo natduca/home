@@ -1,4 +1,5 @@
 {
+	"auto_match_enabled": false,
 	"color_scheme": "Packages/Color Scheme - Default/Monokai Bright.tmTheme",
 	"font_size": 11.0,
 	"highlight_modified_tabs": false,
@@ -8,6 +9,5 @@
 	],
 	"tab_size": 2,
 	"translate_tabs_to_spaces": true,
-	"trim_trailing_white_space_on_save": true,
-	"auto_match_enabled": false
+	"trim_trailing_white_space_on_save": true
 }
