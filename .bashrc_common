@@ -124,3 +124,5 @@ fi
 
 # Remove wrong JDK /usr/local/buildtools/java/jdk/bin from PATH
 export PATH=${PATH/\/usr\/local\/buildtools\/java\/jdk\/bin:/}
+
+alias namespaces='git grep ".exportTo(" | cut -d : -f 2| sort | uniq'

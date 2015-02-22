@@ -1,0 +1,105 @@
+#!/usr/bin/env python
+import optparse
+import os
+import re
+import sys
+import unittest
+
+def _GetFilesFromArgs(args):
+  all_files = set()
+  for arg in args:
+    absarg = os.path.abspath(arg)
+    if not os.path.isdir(absarg):
+      all_files.add(absarg)
+      continue
+    for dirpath, dirnames, filenames in os.walk(absarg):
+      for f in filenames:
+        if f.startswith('.'):
+          continue
+        x = os.path.abspath(os.path.join(dirpath, f))
+        all_files.add(x)
+  return list(all_files)
+
+class ParsedModule(object):
+  def __init__(self, text=None):
+    self.ns = None
+    self.exports = set()
+    if text:
+      self.Parse(text)
+
+  def Parse(self, text):
+    m = re.match(""".+tv\.exportTo\(\'(.+?)\', function\(\) \{.+return \{(.*)\};?\s*\}\s*\)""",
+        text, re.DOTALL | re.MULTILINE)
+    if not m:
+      return
+    self.ns = m.group(1)
+    raw_exports = m.group(2)
+    for raw_export in raw_exports.split(','):
+      raw_export = raw_export.strip()
+      if len(raw_export) == 0:
+        continue
+      t = raw_export.split(':')
+      if len(t) != 2:
+        import pdb; pdb.set_trace()
+      exp = t[0].strip()
+      if len(exp) > 80:
+        import pdb; pdb.set_trace()
+      self.exports.add(exp)
+
+  def GetFullExports(self):
+    return set([self.ns + '.' + x for x in self.exports])
+
+
+class Tests(unittest.TestCase):
+  def testBasic(self):
+    m = ParsedModule("""
+      tv.exportTo('tv', function() {
+
+        return {
+          a: foo
+        };
+      });
+      """)
+    self.assertEquals(m.ns, 'tv')
+    self.assertEquals(m.exports, set('a'))
+
+def Main(args):
+  parser = optparse.OptionParser()
+  parser.add_option('--test', action='store_true')
+  parser.add_option('--rename_dir')
+  options, args = parser.parse_args(args)
+  if options.test:
+    sys.argv.remove('--test')
+    unittest.main()
+
+  if len(args) == 0:
+    parser.error('At least one argument required')
+
+  all_files = _GetFilesFromArgs(args)
+
+  exports = set()
+  for filename in all_files:
+    with open(filename, 'r') as f:
+      contents = f.read()
+    m = ParsedModule(contents)
+    exports.update(m.GetFullExports())
+  exports = list(exports)
+  exports.sort()
+
+  if options.rename_dir:
+    new_exports = [re.sub('^tv.', 'tv.b.', x) for x in exports]
+    renames = zip(exports, new_exports)
+
+    all_rename_files = _GetFilesFromArgs(options.rename_dir)
+    for filename in all_rename_files:
+      with open(filename, 'r') as f:
+        contents = f.read()
+      for ren in renames:
+        contents = contents.replace(ren[0], ren[1])
+      with open(filename, 'w') as f:
+        f.write(contents)
+
+  else:
+    print '\n'.join(exports)
+if __name__ == '__main__':
+  sys.exit(Main(sys.argv[1:]))
