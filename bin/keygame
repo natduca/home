@@ -1,0 +1,422 @@
+#!/usr/bin/env python
+################################################################################
+# A little finger training program for a friend to help them learn
+# readline/emacs line movement hotkeys.
+################################################################################
+import curses
+import random
+import optparse
+import os
+import sys
+
+import Queue
+
+def _IsWordStart(str, index):
+  sCur = str[index]
+  if index == 0:
+    return not sCur.isspace()
+  sPrev = str[index - 1]
+  if sPrev.isspace() and not sCur.isspace():
+    return True
+  return False
+
+
+def _IsWordEnd(str, index):
+  sCur = str[index]
+  sPrev = str[index - 1]
+  if index == 0:
+    return False
+  if not sPrev.isspace() and sCur.isspace():
+    return True
+  return False
+
+
+class Point(object):
+  def __init__(self, game, x, y):
+    self.game = game
+    self.x = x
+    self.y = y
+
+  def __eq__(self, other):
+    return self.x == other.x and self.y == other.y
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+  def __hash__(self):
+    return hash((self.x, self.y))
+
+  @property
+  def map(self):
+    return self.game.map
+
+  def Clone(self):
+    return Point(self.game, self.x, self.y)
+
+  def MoveLeft(self):
+    self.x = self.x - 1
+    if self.x < 0:
+      self.x = 0
+      return False
+    return True
+
+  def MoveLeftWord(self):
+    line = self.map.lines[self.y]
+    if self.x == 0:
+      return False
+    if _IsWordStart(line, self.x):
+      self.MoveLeft()
+    while self.x > 0 and not _IsWordStart(line, self.x):
+      self.MoveLeft()
+    return True
+
+  def MoveRight(self):
+    self.x = self.x + 1
+    if self.x >= self.game.width:
+      self.x = self.game.width - 1
+      return False
+    return True
+
+  def MoveRightWord(self):
+    line = self.map.lines[self.y]
+    if self.x == self.game.width - 1:
+      return False
+
+    old_x = self.x
+    if _IsWordEnd(line, self.x):
+      self.MoveRight()
+    while self.x < self.game.width - 1 and not _IsWordEnd(line, self.x):
+      self.MoveRight()
+    if _IsWordEnd(line, self.x):
+      return True
+    self.x = old_x
+    return False
+
+  def MoveToEndOfLine(self):
+    line = self.map.lines[self.y]
+    stripped = line.rstrip()
+    eol = len(stripped)
+    if self.x == eol:
+      return False
+    self.x = eol
+    return True
+
+  def MoveToStartOfLine(self):
+    if self.x == 0:
+      return False
+    self.x = 0
+    return True
+
+  def MoveUp(self):
+    self.y = self.y - 1
+    if self.y < 0:
+      self.y = 0
+      return False
+    self.IfIsPastEndOfLineShiftInward()
+    return True
+
+  def MoveDown(self):
+    self.y = self.y + 1
+    if self.y >= self.game.height:
+      self.y = self.game.height - 1
+      return False
+    self.IfIsPastEndOfLineShiftInward()
+    return True
+
+  def IfIsPastEndOfLineShiftInward(self):
+    line = self.map.lines[self.y]
+    stripped = line.rstrip()
+    eol = len(stripped)
+    if self.x > eol:
+      self.x = eol
+
+  def GetReachablePoints(self):
+    possible_moves = [
+      Point.MoveLeft, Point.MoveLeftWord,
+      Point.MoveRight, Point.MoveRightWord,
+      Point.MoveToEndOfLine,
+      Point.MoveToStartOfLine,
+      Point.MoveUp,
+      Point.MoveDown
+    ]
+    for move in possible_moves:
+      result = self.Clone()
+      move(result)
+      if result != self:
+        yield result
+
+
+
+class Map(object):
+  def __init__(self, width, height, filename):
+    self.name = os.path.basename(filename)
+    self.width = width
+    self.height = height
+    self.lines = None
+
+    self._LoadMap(filename)
+
+  def _LoadMap(self, map_filename):
+    with open(map_filename, 'r') as f:
+      lines = f.readlines()
+
+    # Strip off the newlines in each line.
+    lines = [line.rstrip() for line in lines]
+
+    # Drop lines beyond the map.
+    lines = lines[:self.height]
+
+    # The file might be shorter than the map height so add empty lines.
+    while len(lines) < self.height:
+      lines.append(' ' * self.width)
+
+    # Now make sure each line is the width of the map.
+    def EnsureLineIsMapWidth(line):
+      if len(line) < self.width:
+        amount_difference = self.width - len(line)
+        padding = ' ' * amount_difference
+        return line + padding
+      elif len(line) > self.width:
+        return line[:self.width]
+      else:
+        return line
+
+    lines = [EnsureLineIsMapWidth(line) for line in lines]
+
+    self.lines = lines
+
+  def Render(self, stdscr):
+    for line_number, line in enumerate(self.lines):
+      try:
+        stdscr.addstr(line_number + 1, 0, line) # 1 because top row is status bar.
+      except curses.error:
+        pass
+
+class Game(object):
+  def __init__(self, seed, map):
+    self.rng = random.Random(seed)
+    self.map = map
+    self.cur_pos = Point(self, 0, 0)
+    self.goal_pos = Point(self, self.width / 2, self.height / 2)
+    self.score = 0
+
+    self.current_par = 0
+    self.num_moves = 0
+
+    self.PickNewGoal()
+
+  @property
+  def width(self):
+    return self.map.width
+
+  @property
+  def height(self):
+    return self.map.height
+
+  def IsAtGoal(self):
+    return self.cur_pos == self.goal_pos
+
+  def IncrementScore(self):
+    delta = self.num_moves - self.current_par
+    self.score += delta
+
+    self.num_moves = 0
+    self.current_par = 0
+
+  def PickNewGoal(self):
+    self.goal_pos.y = int(self.rng.random() * self.height)
+
+    line = self.map.lines[self.goal_pos.y]
+    eol = len(line.rstrip())
+
+    self.goal_pos.x = int(self.rng.random() * eol)
+
+    self.current_par = self.GetShortestDistanceToGoal(self.cur_pos,
+                                                      self.goal_pos)
+
+  def Render(self, stdscr):
+    stdscr.noutrefresh()
+
+    stdscr.clear()
+    self.map.Render(stdscr)
+    stdscr.addstr(0, 0, ' ' * self.width, curses.color_pair(2))
+    stdscr.addstr(0, 0,
+                  "%s: Score: " % self.map.name,
+                  curses.color_pair(2))
+
+    if self.score < 0:
+      score_attrs = curses.color_pair(3)
+    else:
+      score_attrs = curses.color_pair(4)
+    stdscr.addstr(str(self.score), score_attrs)
+
+
+    stdscr.addstr('  Current: ', curses.color_pair(2))
+    if self.num_moves > self.current_par:
+      moves_attrs = curses.color_pair(3)
+    else:
+      moves_attrs = curses.color_pair(4)
+    stdscr.addstr('%3i' % self.num_moves, moves_attrs)
+    stdscr.addstr('/%i' % self.current_par, curses.color_pair(2))
+
+    stdscr.addch(self.goal_pos.y + 1, self.goal_pos.x, '*', curses.color_pair(1) | curses.A_STANDOUT)
+
+    curses.doupdate()
+
+  def GetShortestDistanceToGoal(self, start, dest):
+    start = start.Clone()
+    visited = set()
+
+    q = Queue.PriorityQueue()
+
+    q.put((0, start))
+    visited.add(start)
+
+    while True:
+      distance, cur_point = q.get()
+      if cur_point == dest:
+        return distance
+
+      for next in cur_point.GetReachablePoints():
+        if next in visited:
+          continue
+        visited.add(next)
+        q.put((distance + 1, next))
+
+
+
+
+  def PrintFinalResult(self):
+    print "Score: %i" % self.score
+
+def CursesMain(stdscr, options, map_filename):
+  curses.start_color()
+  curses.init_pair(1, curses.COLOR_RED, 0)
+  curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLUE)
+  curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLUE)
+  curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLUE)
+
+  curses.meta(True)
+  stdscr.scrollok(False)
+  maxyx = stdscr.getmaxyx()
+  map = Map(maxyx[1], maxyx[0] - 1, map_filename)
+  game = Game(options.seed, map)
+
+  while True:
+    if game.IsAtGoal():
+      game.IncrementScore()
+      game.PickNewGoal()
+
+    if options.print_reachable_from_current_point:
+      _Cls()
+      for p in game.cur_pos.GetReachablePoints():
+        _P("%i %i -> %i %i",
+           game.cur_pos.x, game.cur_pos.y,
+           p.x, p.y)
+
+    game.Render(stdscr)
+    _PrintP(stdscr)
+
+    stdscr.move(game.cur_pos.y + 1, game.cur_pos.x)
+
+    try:
+      c = stdscr.getch()
+      if c == 27: # meta key
+        c = stdscr.getch()
+        n = 'M-' + curses.keyname(c)
+      else:
+        n = curses.keyname(c)
+    except KeyboardInterrupt:
+      break
+
+    handled = False
+    if n == '^P':
+      game.cur_pos.MoveUp()
+      handled = True
+    elif n == '^N':
+      game.cur_pos.MoveDown()
+      handled = True
+    elif n == '^F':
+      game.cur_pos.MoveRight()
+      handled = True
+    elif n == '^A':
+      game.cur_pos.MoveToStartOfLine()
+      handled = True
+    elif n == '^B':
+      game.cur_pos.MoveLeft()
+      handled = True
+    elif n == '^E':
+      game.cur_pos.MoveToEndOfLine()
+      handled = True
+    elif n == 'M-b':
+      game.cur_pos.MoveLeftWord()
+      handled = True
+    elif n == 'M-f':
+      game.cur_pos.MoveRightWord()
+      handled = True
+
+    if handled:
+      game.num_moves += 1
+  return game
+
+def Main(args):
+  parser = optparse.OptionParser('%prog [options] <filename>')
+  parser.add_option("-r", dest="seed", type="int",
+                    help="Random number seed to use", default=0)
+  parser.add_option('--debug-preachable',
+                    dest="print_reachable_from_current_point",
+                    action='store_true',
+                    help="Prints distance calculations")
+  options, leftover_args = parser.parse_args(args)
+
+  if len(leftover_args) != 1:
+    parser.error('Expected filename to play on')
+  map_filename = leftover_args[0]
+
+  game = curses.wrapper(CursesMain, options, map_filename)
+  game.PrintFinalResult()
+
+
+# Debugging helpers
+################################################################################
+
+def _D(stdscr):
+  """Debug breakpoint while in curses mode"""
+  curses.nocbreak()
+  stdscr.keypad(0)
+  curses.echo()
+  curses.endwin()
+  import pdb; pdb.set_trace()
+
+_pending = []
+def _P(msg, *args):
+  if len(args):
+    t = msg % args
+  else:
+    t = str(msg)
+  _pending.append(t)
+
+def _Cls():
+  del _pending[:]
+
+def _PrintP(stdscr):
+  global _pending
+  if len(_pending) == 0:
+    return
+
+  maxyx = stdscr.getmaxyx()
+  w = maxyx[1]
+
+  max_len = max([len(t) for t in _pending])
+  for i,t in enumerate(_pending):
+    stdscr.addstr(i, w - max_len, t)
+    stdscr.addstr(' ' * (max_len - len(t)))
+  while len(_pending) > 10:
+    _pending = _pending[1:]
+
+
+################################################################################
+
+if __name__ == '__main__':
+  sys.exit(Main(sys.argv[1:]))
+
