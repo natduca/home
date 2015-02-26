@@ -3,16 +3,16 @@
 	url = http://github.com/tpope/vim-pathogen.git
 [submodule "quickopen"]
 	path = quickopen
-	url = git@github.com:natduca/quickopen.git
+	url = http://github.com/natduca/quickopen.git
 [submodule "trace_event"]
 	path = trace_event
-	url = git@github.com:natduca/trace_event.git
+	url = http://github.com/natduca/trace_event.git
 [submodule "trace_event_viewer"]
 	path = trace_event_viewer
-	url = git@github.com:natduca/trace_event_viewer.git
+	url = http://github.com/natduca/trace_event_viewer.git
 [submodule "elisp/nyan-mode"]
 	path = elisp/nyan-mode
-	url = git://github.com/TeMPOraL/nyan-mode.git
+	url = http://github.com/TeMPOraL/nyan-mode.git
 [submodule "adb_trace"]
 	path = adb_trace
 	url = https://github.com/johnmccutchan/adb_trace.git
