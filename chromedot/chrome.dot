@@ -1,0 +1,86 @@
+graph chrome {
+  { rank=min
+    vsync, input, net
+  }
+  { rank=max
+    gles;
+  }
+
+  // Input
+  input -- input_router;
+  input_router -- gesture_recognizer;
+  input_router -- browser_scheduler;
+  input_router -- input_filter;
+  input_filter -- renderer_scheduler;
+  input_filter -- layout_tree -- dom;
+  layout_tree -- scroll_hooks;
+  scroll_hooks -- bindings;
+
+  // CC
+  cc -- cc_scheduler;
+  cc -- gles;
+  cc -- skia;
+  cc -- raster_worker_pool;
+
+  // Raster
+  skia -- ganesh;
+  skia -- image_cache;
+  ganesh -- gles;
+
+  image_cache -- lazy_pixel_ref;
+  lazy_pixel_ref -- webkit_cache;
+  lazy_pixel_ref -- image_decoders;
+  image_cache -- base_discardables;
+
+  // Webcoreish things
+  v8 -- bindings;
+  bindings -- requestAnimationFrame -- blink_scheduler;
+  bindings -- dom_timers;
+  bindings -- dom;
+  dom -- blink_scheduler;
+  dom -- style;
+  html_parser -- dom;
+  bindings -- xhr;
+
+  // Renderer teams
+  style -- layout -- paint;
+  paint -- cc [ label="display lists"];
+
+  // Render thread
+  render_thread -- render_widget;
+  render_thread -- input_filter;
+
+  // V8
+  v8 -- v8_gc;
+  v8 -- parse_and_compile;
+
+  // Scheduling
+  vsync -- browser_scheduler;
+  browser_scheduler -- cc_scheduler;
+  cc_scheduler -- renderer_scheduler;
+  renderer_scheduler -- blink_scheduler;
+  blink_scheduler -- blink_shared_timers;
+  blink_scheduler -- dom_timers;
+  html_parser -- blink_scheduler;
+  render_widget -- renderer_scheduler;
+  v8_gc -- renderer_scheduler;
+
+  // Loader
+  loader -- renderer_scheduler;
+  loader -- preload_scanner;
+  loader -- net;
+  preload_scanner -- net;
+  loader_scheduler -- loader;
+  render_thread -- preload_scanner;
+  loader -- paint_inhibitor;
+  paint_inhibitor -- cc_scheduler;
+  xhr -- loader;
+  loader -- service_worker;
+  service_worker -- net;
+  loader -- v8;
+
+  // WebView
+  render_widget -- web_view;
+  web_view -- main_frame;
+  main_frame -- dom;
+}
