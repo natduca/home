@@ -8,15 +8,21 @@ import random
 import optparse
 import os
 import sys
+import re
 
 import Queue
+
+def _isBreak(str):
+  if re.match('\w', str):
+    return False
+  return True
 
 def _IsWordStart(str, index):
   sCur = str[index]
   if index == 0:
-    return not sCur.isspace()
+    return not _isBreak(sCur)
   sPrev = str[index - 1]
-  if sPrev.isspace() and not sCur.isspace():
+  if _isBreak(sPrev) and not _isBreak(sCur):
     return True
   return False
 
@@ -26,7 +32,7 @@ def _IsWordEnd(str, index):
   sPrev = str[index - 1]
   if index == 0:
     return False
-  if not sPrev.isspace() and sCur.isspace():
+  if not _isBreak(sPrev) and _isBreak(sCur):
     return True
   return False
 
@@ -129,6 +135,7 @@ class Point(object):
     eol = len(stripped)
     if self.x > eol:
       self.x = eol
+
 
   def GetReachablePoints(self):
     possible_moves = [
