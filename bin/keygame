@@ -253,8 +253,9 @@ class Game(object):
 
     self.goal_pos.x = int(self.rng.random() * eol)
 
-    self.current_par = self.GetShortestDistanceToGoal(self.cur_pos,
-                                                      self.goal_pos)
+    best_par = self.GetShortestDistanceToGoal(self.cur_pos,
+                                              self.goal_pos)
+    self.current_par = int(best_par * 1.4)
 
   def Render(self, stdscr):
     stdscr.noutrefresh()
