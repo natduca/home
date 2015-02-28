@@ -239,7 +239,7 @@ class Game(object):
     return self.cur_pos == self.goal_pos
 
   def IncrementScore(self):
-    delta = self.num_moves - self.current_par
+    delta = self.current_par - self.num_moves
     self.score += delta
 
     self.num_moves = 0
