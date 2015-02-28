@@ -41,6 +41,7 @@ class Point(object):
   def __init__(self, game, x, y):
     self.game = game
     self.x = x
+    self.preferred_x = None
     self.y = y
 
   def __eq__(self, other):
@@ -61,12 +62,14 @@ class Point(object):
 
   def MoveLeft(self):
     self.x = self.x - 1
+    self.preferred_x = None
     if self.x < 0:
       self.x = 0
       return False
     return True
 
   def MoveLeftWord(self):
+    self.preferred_x = None
     line = self.map.lines[self.y]
     if self.x == 0:
       return False
@@ -77,6 +80,7 @@ class Point(object):
     return True
 
   def MoveRight(self):
+    self.preferred_x = None
     self.x = self.x + 1
     if self.x >= self.game.width:
       self.x = self.game.width - 1
@@ -84,6 +88,7 @@ class Point(object):
     return True
 
   def MoveRightWord(self):
+    self.preferred_x = None
     line = self.map.lines[self.y]
     if self.x == self.game.width - 1:
       return False
@@ -99,6 +104,7 @@ class Point(object):
     return False
 
   def MoveToEndOfLine(self):
+    self.preferred_x = None
     line = self.map.lines[self.y]
     stripped = line.rstrip()
     eol = len(stripped)
@@ -108,6 +114,7 @@ class Point(object):
     return True
 
   def MoveToStartOfLine(self):
+    self.preferred_x = None
     if self.x == 0:
       return False
     self.x = 0
@@ -118,7 +125,7 @@ class Point(object):
     if self.y < 0:
       self.y = 0
       return False
-    self.IfIsPastEndOfLineShiftInward()
+    self.UpdateXAfterVerticalMove()
     return True
 
   def MoveDown(self):
@@ -126,16 +133,24 @@ class Point(object):
     if self.y >= self.game.height:
       self.y = self.game.height - 1
       return False
-    self.IfIsPastEndOfLineShiftInward()
+    self.UpdateXAfterVerticalMove()
     return True
 
-  def IfIsPastEndOfLineShiftInward(self):
+  def UpdateXAfterVerticalMove(self):
     line = self.map.lines[self.y]
     stripped = line.rstrip()
     eol = len(stripped)
     if self.x > eol:
+      if self.preferred_x:
+        self.preferred_x = max(self.x, self.preferred_x)
+      else:
+        self.preferred_x = self.x
       self.x = eol
-
+    else:
+      if self.preferred_x:
+        self.x = min(self.preferred_x, eol)
+      else:
+        pass
 
   def GetReachablePoints(self):
     possible_moves = [
