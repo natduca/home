@@ -10,7 +10,7 @@
 	ignore-errors = true
 [core]
   excludesfile = ~/.gitignore
-	editor = /usr/bin/vim
+	editor = vim -f
 [branch]
   autosetuprebase = always
 [push]
