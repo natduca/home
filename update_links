@@ -60,10 +60,10 @@ def Update():
   links.append(Link('~/.vimrc', '.vimrc'))
 
   if sys.platform == 'darwin':
-    sublime_packages_path = '~/Library/Application Support/Sublime Text 2/Packages'
+    sublime_packages_path = '~/Library/Application Support/Sublime Text 3/Packages'
     sublime_user_path = os.path.join(sublime_packages_path, 'User')
   elif 'linux' in sys.platform:
-    sublime_packages_path = '~/.config/sublime-text-2/Packages'
+    sublime_packages_path = '~/.config/sublime-text-3/Packages'
     sublime_user_path = os.path.join(sublime_packages_path, 'User')
   else:
     raise NotImplemented('Need this platform added')
