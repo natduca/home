@@ -25,3 +25,6 @@
 [submodule "SublimePackages/SublimeAllAutocomplete"]
 	path = SublimePackages/SublimeAllAutocomplete
 	url = https://github.com/alienhard/SublimeAllAutocomplete
+[submodule "SublimePackages/babel-sublime"]
+	path = SublimePackages/babel-sublime
+	url = https://github.com/babel/babel-sublime
