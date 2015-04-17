@@ -28,3 +28,6 @@
 [submodule "SublimePackages/babel-sublime"]
 	path = SublimePackages/babel-sublime
 	url = https://github.com/babel/babel-sublime
+[submodule "drive-quick-search"]
+	path = drive-quick-search
+	url = https://github.com/axenol/drive-quick-search.git
