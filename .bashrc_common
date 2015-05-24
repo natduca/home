@@ -119,7 +119,7 @@ alias ssh_with_adb_forwarding='ssh -C -R 5037:localhost:5037 -R 10000:localhost:
 
 
 if test `uname` == Darwin; then
-  export PATH=$PATH:/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin
+  export PATH=$PATH:/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
 fi
 
 # Remove wrong JDK /usr/local/buildtools/java/jdk/bin from PATH
