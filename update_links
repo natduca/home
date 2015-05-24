@@ -56,6 +56,7 @@ def Update():
   links = []
   links.append(Link('~/.emacs', '.emacs'))
   links.append(Link('~/.gitconfig', '.gitconfig'))
+  links.append(Link('~/.gitignore', '.gitignore_global'))
   links.append(Link('~/.vim', '.vim'))
   links.append(Link('~/.vimrc', '.vimrc'))
 
