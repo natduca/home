@@ -5,7 +5,7 @@ import sys
 def Main():
   with open(os.path.expanduser('~/.markutils/m1')) as f:
     m1_dir = f.read().strip()
-  trace2html = os.path.join(m1_dir, 'third_party/trace-viewer/trace2html')
+  trace2html = os.path.join(m1_dir, 'third_party/catapult/tracing/bin/trace2html')
   print trace2html
   args = [trace2html]
   args += sys.argv[1:]
