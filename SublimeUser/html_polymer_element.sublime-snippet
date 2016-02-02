@@ -1,0 +1,19 @@
+<snippet>
+  <content><![CDATA[
+<polymer-element name="$1">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    #table {
+      flex: 1 1 auto;
+    }
+    </style>
+    $0
+  </template>
+</polymer-element>
+]]></content>
+  <tabTrigger>&lt;poly</tabTrigger>
+  <scope>source.js</scope>
+</snippet>

@@ -1,0 +1,18 @@
+<snippet>
+  <content><![CDATA[
+<!DOCTYPE html>
+<head>
+  <style>
+  </style>
+</head>
+<body>
+  <script>
+  function onLoad() {
+    $0
+  }
+  window.addEventListener('load', onLoad);
+  </script>
+</body>
+]]></content>
+  <tabTrigger>dummy</tabTrigger>
+</snippet>
