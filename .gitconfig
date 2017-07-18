@@ -17,3 +17,5 @@
 	default = simple
 [credential]
 	helper = osxkeychain
+[http]
+	cookiefile = /Users/nduca/.gitcookies
