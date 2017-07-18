@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+import argparse
+import os
+import sys
+import subprocess
+import urllib
+import urlparse
+import tempfile
+
+def view(filename):
+  base, ext = os.path.splitext(filename)
+  args = ['open']
+  if ext == '.svg':
+    args += ['-a', '/Applications/Google Chrome.app']
+  args += [filename]
+  p = subprocess.Popen(args)
+  stdout, stderr = p.communicate()
+  p.wait()
+  return p.returncode
+
+
+def copyToClipboard(filename):
+  abs_filename = os.path.abspath(filename)
+  scr = """set the clipboard to (read (POSIX file "%s") as JPEG picture)""" % filename
+  p = subprocess.Popen(['osascript', '-e', scr])
+  p.wait()
+  return p.returncode
+
+
+def dot2(filename, options):
+  if options.mode in ('png', 'clip'):
+    otype = 'png'
+  else:
+    otype = 'svg'
+
+  if options.mode == 'clip':
+    f = tempfile.NamedTemporaryFile(delete=False, suffix='.' + otype)
+    ofilename = f.name
+  else:
+    ofilename = os.path.splitext(filename)[0] + '.' + otype
+  args = ['dot', '-T%s' % otype, '-o%s' % ofilename, filename]
+  p = subprocess.Popen(args,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       stdin=None)
+  stdout, stderr = p.communicate()
+  p.wait()
+  if len(stderr) > 0:
+    print stderr
+    return 255
+
+  if options.mode == 'clip':
+    return copyToClipboard(ofilename)
+
+  if options.view_after:
+    return view(ofilename)
+
+  return 0
+
+def main(in_args):
+  parser = argparse.ArgumentParser()
+  parser.add_argument('filenames', nargs='+')
+  parser.add_argument('--mode', choices=['svg', 'png', 'clip'], default='svg')
+  parser.add_argument('--view_after', action='store_true')
+  options = parser.parse_args(in_args)
+
+  if options.view_after and options.mode == 'clip':
+    parser.error('view_after and clip are not supported')
+
+  for filename in options.filenames:
+      r = dot2(filename, options)
+      if r != 0:
+        return r
+  return 0
+
+if __name__ == '__main__':
+  sys.exit(main(sys.argv[1:]))
