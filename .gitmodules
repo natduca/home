@@ -31,3 +31,6 @@
 [submodule "drive-quick-search"]
 	path = drive-quick-search
 	url = https://github.com/axenol/drive-quick-search.git
+[submodule "SublimePackages/kotlin-sublime-package"]
+	path = SublimePackages/kotlin-sublime-package
+	url = https://github.com/vkostyukov/kotlin-sublime-package.git
