@@ -15,7 +15,7 @@
   autosetuprebase = always
 [push]
 	default = simple
-[credential]
-	helper = osxkeychain
 [http]
 	cookiefile = /Users/nduca/.gitcookies
+[init]
+	defaultBranch = main
